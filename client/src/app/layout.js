@@ -12,12 +12,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="dark">
       <body className={inter.className}>
-        <main className="w-full min-h-screen flex flex-col">
-          <Providers>
+        <Providers>
+          <main className="w-full min-h-screen flex flex-col">
             <Header />
             {children}
-          </Providers>
-        </main>
+          </main>
+        </Providers>
       </body>
     </html>
   );
