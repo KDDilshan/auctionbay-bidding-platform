@@ -1,10 +1,14 @@
 "use client";
 import React, { useState } from "react";
-import { Button, ButtonGroup, Input } from "@nextui-org/react";
-import { HiMiniEye, HiEyeSlash } from "react-icons/hi2";
-import PasswordInput from "@/components/PasswordInput";
+import { Button, Input } from "@nextui-org/react";
 import Link from "next/link";
+import FormInputs from "@/components/FormInputs";
 function page() {
+  const [firstName, setfirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rePassword, setRePassword] = useState("");
   function register(e) {
     e.preventDefault();
     console.log("registered");
@@ -19,28 +23,42 @@ function page() {
         <p className="text-sm">Enter your email below to create your account</p>
         <div className="flex gap-1">
           <Input
-            className="w-[50%]"
             type="text"
             variant={"bordered"}
             label="First Name"
             isRequired
+            validationBehavior="native"
+            value={firstName}
+            onChange={(e) => setfirstName(e.target.value)}
           />
           <Input
-            className="w-[50%]"
             type="text"
             variant={"bordered"}
             label="Last Name"
             isRequired
+            validationBehavior="native"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
           />
         </div>
-        <Input
-          isRequired
-          type="email"
-          variant={"bordered"}
-          label="Email address"
+        <FormInputs.Email
+          lable={"Email address"}
+          value={email}
+          setState={setEmail}
         />
-        <PasswordInput lable={"Password"} />
-        <PasswordInput lable={"Confirm Password"} />
+        <FormInputs.Password
+          lable={"Password"}
+          value={password}
+          setState={setPassword}
+        />
+        <FormInputs.Password
+          lable={"Confirm Password"}
+          value={rePassword}
+          setState={setRePassword}
+          validate={(t) =>
+            password != t ? "Password does not match" : true
+          }
+        />
         <Button type="submit" className="w-full">
           Sign up
         </Button>

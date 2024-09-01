@@ -1,10 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import { Button, ButtonGroup, Input } from "@nextui-org/react";
-import { HiMiniEye, HiEyeSlash } from "react-icons/hi2";
+import { Button } from "@nextui-org/react";
 import Link from "next/link";
-import PasswordInput from "@/components/PasswordInput";
+import FormInputs from "@/components/FormInputs";
 function page() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   function login(e) {
     e.preventDefault();
     console.log("registered");
@@ -19,8 +20,16 @@ function page() {
         <p className="text-sm">
           Please enter your login credentials to continiue
         </p>
-        <Input type="email" variant={"bordered"} label="Email address" />
-        <PasswordInput lable={"Password"} />
+        <FormInputs.Email
+          lable={"Email address"}
+          value={email}
+          setState={setEmail}
+        />
+        <FormInputs.Password
+          lable={"Password"}
+          value={password}
+          setState={setPassword}
+        />
         <Button type="submit" className="w-full">
           Sign in
         </Button>
