@@ -9,9 +9,11 @@ function page() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rePassword, setRePassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   function register(e) {
     e.preventDefault();
     console.log("registered");
+    setIsLoading(true);
   }
   return (
     <div className="container-full flex justify-center items-center grow">
@@ -19,7 +21,7 @@ function page() {
         onSubmit={register}
         className="max-w-sm flex flex-col items-center gap-2"
       >
-        <h1 className=" font-bold text-xl">Create an account</h1>
+        <h1 className=" font-bold text-2xl">Create an account</h1>
         <p className="text-sm">Enter your email below to create your account</p>
         <div className="flex gap-1">
           <Input
@@ -55,11 +57,9 @@ function page() {
           lable={"Confirm Password"}
           value={rePassword}
           setState={setRePassword}
-          validate={(t) =>
-            password != t ? "Password does not match" : true
-          }
+          validate={(t) => (password != t ? "Password does not match" : true)}
         />
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full" isLoading={isLoading}>
           Sign up
         </Button>
         <p className="text-sm">

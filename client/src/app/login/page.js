@@ -6,9 +6,11 @@ import FormInputs from "@/components/FormInputs";
 function page() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   function login(e) {
     e.preventDefault();
     console.log("registered");
+    setIsLoading(true);
   }
   return (
     <div className="container-full flex justify-center items-center grow">
@@ -16,7 +18,7 @@ function page() {
         onSubmit={login}
         className="max-w-sm w-full flex flex-col items-center gap-2"
       >
-        <h1 className="font-bold text-xl">Welcome Back</h1>
+        <h1 className="font-bold text-2xl">Welcome Back</h1>
         <p className="text-sm">
           Please enter your login credentials to continiue
         </p>
@@ -30,7 +32,7 @@ function page() {
           value={password}
           setState={setPassword}
         />
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full" isLoading={isLoading}>
           Sign in
         </Button>
         <p className="text-sm">
