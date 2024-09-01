@@ -1,0 +1,61 @@
+"use client";
+import { Input } from "@nextui-org/react";
+import validator from "validator";
+import React, { useState } from "react";
+import { HiEyeSlash, HiMiniEye } from "react-icons/hi2";
+
+function Email({ lable, value, setState }) {
+  return (
+    <Input
+      isRequired
+      type="email"
+      variant={"bordered"}
+      label={lable}
+      value={value}
+      validationBehavior="native"
+      validate={(t) =>
+        t.length > 0 && !validator.isEmail(t) ? "Invalid email address" : null
+      }
+      onChange={(e) => setState(e.target.value)}
+    />
+  );
+}
+
+function Password({ lable, value, setState, validate }) {
+  const [passVisible, setPassVisible] = useState(false);
+  return (
+    <Input
+      type={passVisible ? "text" : "password"}
+      variant={"bordered"}
+      label={lable}
+      isRequired
+      value={value}
+      onChange={(e) => setState(e.target.value)}
+      validationBehavior="native"
+      validate={(t) =>
+        validate
+          ? validate(t)
+          : t.length > 0 && t.length < 8
+          ? "Require minimum 8 charachters."
+          : true
+      }
+      endContent={
+        <button
+          className="focus:outline-none"
+          type="button"
+          onClick={() => setPassVisible(!passVisible)}
+          aria-label="toggle password visibility"
+        >
+          {passVisible ? (
+            <HiEyeSlash className="text-2xl text-default-400 pointer-events-none" />
+          ) : (
+            <HiMiniEye className="text-2xl text-default-400 pointer-events-none" />
+          )}
+        </button>
+      }
+    />
+  );
+}
+
+const FormInputs = { Email, Password };
+export default FormInputs;
