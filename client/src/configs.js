@@ -11,3 +11,5 @@ export const toastConfig = {
   theme: "dark",
   transition: Bounce,
 };
+
+export const apiLink = "https://localhost:7218";

@@ -5,7 +5,7 @@ import Link from "next/link";
 import FormInputs from "@/components/FormInputs";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { toastConfig } from "@/configs";
+import { apiLink, toastConfig } from "@/configs";
 import { useRouter } from "next/navigation";
 function page() {
   const [firstName, setfirstName] = useState("");
@@ -19,7 +19,7 @@ function page() {
     e.preventDefault();
     setIsLoading(true);
     axios
-      .post("https://localhost:7218/api/User/register", {
+      .post(apiLink + "/api/User/register", {
         firstName,
         lastName,
         email,
