@@ -56,7 +56,6 @@ namespace Api.Controllers
             {
                 return Unauthorized(new AuthResponseDto
                 {
-                    IsSuccess = false,
                     Message = "User not found with this email",
                 });
             }
@@ -67,7 +66,6 @@ namespace Api.Controllers
             {
                 return Unauthorized(new AuthResponseDto
                 {
-                    IsSuccess = false,
                     Message = "Invalid Password."
                 });
             }
@@ -76,7 +74,6 @@ namespace Api.Controllers
             return Ok(new AuthResponseDto
             {
                 Token = token,
-                IsSuccess = true,
                 Message = "Login Success."
             });
         }
