@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useContext } from "react";
 import {
   Navbar,
   NavbarBrand,
@@ -10,8 +11,10 @@ import {
   Link,
   Button,
 } from "@nextui-org/react";
+import { UserContext } from "@/app/providers";
 
 export default function Header() {
+  const { userInfo } = useContext(UserContext);
   const menuItems = [
     "Profile",
     "Dashboard",

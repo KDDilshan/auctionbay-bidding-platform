@@ -74,7 +74,10 @@ namespace Api.Controllers
             return Ok(new AuthResponseDto
             {
                 Token = token,
-                Message = "Login Success."
+                Message = "Login Success.",
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
             });
         }
 
