@@ -3,6 +3,10 @@ import React, { useState } from "react";
 import { Button, Input } from "@nextui-org/react";
 import Link from "next/link";
 import FormInputs from "@/components/FormInputs";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { apiLink, toastConfig } from "@/configs";
+import { useRouter } from "next/navigation";
 function page() {
   const [firstName, setfirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -10,10 +14,25 @@ function page() {
   const [password, setPassword] = useState("");
   const [rePassword, setRePassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { push } = useRouter();
   function register(e) {
     e.preventDefault();
-    console.log("registered");
     setIsLoading(true);
+    axios
+      .post(apiLink + "/api/User/register", {
+        firstName,
+        lastName,
+        email,
+        password,
+      })
+      .then((res) => {
+        toast.success("Account created successfully", toastConfig);
+        push("/login");
+      })
+      .catch((er) => {
+        toast.error(er.response?.data[0].description, toastConfig);
+      })
+      .finally(() => setIsLoading(false));
   }
   return (
     <div className="container-full flex justify-center items-center grow">
