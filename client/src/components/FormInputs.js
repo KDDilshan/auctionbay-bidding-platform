@@ -4,6 +4,9 @@ import validator from "validator";
 import React, { useState } from "react";
 import { HiEyeSlash, HiMiniEye } from "react-icons/hi2";
 
+let regex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]{8,15}$/;
+
 function Email({ lable, value, setState }) {
   return (
     <Input
@@ -35,8 +38,8 @@ function Password({ lable, value, setState, validate }) {
       validate={(t) =>
         validate
           ? validate(t)
-          : t.length > 0 && t.length < 8
-          ? "Require minimum 8 charachters."
+          : t.length > 0 && !regex.test(t)
+          ? "Require minimum 8-15 characters, with at least one uppercase, lowercase, number, and special character."
           : true
       }
       endContent={
