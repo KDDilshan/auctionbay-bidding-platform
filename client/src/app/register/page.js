@@ -6,6 +6,7 @@ import FormInputs from "@/components/FormInputs";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { toastConfig } from "@/configs";
+import { useRouter } from "next/navigation";
 function page() {
   const [firstName, setfirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -13,6 +14,7 @@ function page() {
   const [password, setPassword] = useState("");
   const [rePassword, setRePassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { push } = useRouter();
   function register(e) {
     e.preventDefault();
     setIsLoading(true);
@@ -25,9 +27,10 @@ function page() {
       })
       .then((res) => {
         toast.success("Account created successfully", toastConfig);
+        push("/login");
       })
       .catch((er) => {
-        toast.error(er.response.data[0].description, toastConfig);
+        toast.error(er.response?.data[0].description, toastConfig);
       })
       .finally(() => setIsLoading(false));
   }
