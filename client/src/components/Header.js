@@ -1,5 +1,6 @@
 "use client";
 import React, { useContext } from "react";
+import { FiSearch } from "react-icons/fi";
 import {
   Navbar,
   NavbarBrand,
@@ -10,11 +11,17 @@ import {
   NavbarItem,
   Link,
   Button,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Input,
+  Avatar,
 } from "@nextui-org/react";
 import { UserContext } from "@/app/providers";
 
 export default function Header() {
-  const { userInfo } = useContext(UserContext);
+  const { userInfo, setUserInfo } = useContext(UserContext);
   const menuItems = [
     "Profile",
     "Dashboard",
@@ -28,6 +35,10 @@ export default function Header() {
     "Log Out",
   ];
 
+  const logout = () => {
+    localStorage.removeItem("token");
+    setUserInfo(null);
+  };
   return (
     <Navbar
       disableAnimation
@@ -67,15 +78,62 @@ export default function Header() {
       </NavbarContent>
 
       <NavbarContent justify="end">
-        <NavbarItem className="hidden lg:flex">
-          <Link href="login">Login</Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Button as={Link} color="warning" href="register" variant="flat">
-            Sign Up
-          </Button>
-        </NavbarItem>
+        <Input
+          classNames={{
+            base: "max-w-full sm:max-w-[25rem] h-10",
+            mainWrapper: "h-full",
+            input: "text-small",
+            inputWrapper:
+              "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
+          }}
+          placeholder="Type to search..."
+          size="sm"
+          startContent={<FiSearch />}
+          type="search"
+        />
       </NavbarContent>
+
+      {userInfo && (
+        <NavbarContent as="div" className="items-center" justify="end">
+          <Dropdown placement="bottom-end">
+            <DropdownTrigger>
+              <Avatar
+                isBordered
+                as="button"
+                className="transition-transform"
+                color="secondary"
+                name="Jason Hughes"
+                size="sm"
+                src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+              />
+            </DropdownTrigger>
+            <DropdownMenu aria-label="Profile Actions" variant="flat">
+              <DropdownItem key="profile" className="h-14 gap-2">
+                <p className="font-semibold">Signed in as</p>
+                <p className="font-semibold">{userInfo.email}</p>
+              </DropdownItem>
+              <DropdownItem key="settings">My Settings</DropdownItem>
+              <DropdownItem key="configurations">Seller Dashboard</DropdownItem>
+              <DropdownItem key="logout" color="danger" onClick={logout}>
+                Log Out
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </NavbarContent>
+      )}
+
+      {!userInfo && (
+        <NavbarContent justify="end">
+          <NavbarItem className="hidden lg:flex">
+            <Link href="login">Login</Link>
+          </NavbarItem>
+          <NavbarItem>
+            <Button as={Link} color="warning" href="register" variant="flat">
+              Sign Up
+            </Button>
+          </NavbarItem>
+        </NavbarContent>
+      )}
 
       <NavbarMenu>
         {menuItems.map((item, index) => (
