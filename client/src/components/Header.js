@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { FiSearch } from "react-icons/fi";
 import {
   Navbar,
@@ -19,6 +19,8 @@ import {
   Avatar,
 } from "@nextui-org/react";
 import { UserContext } from "@/app/providers";
+import { apiLink } from "@/configs";
+import axios from "axios";
 
 export default function Header() {
   const { userInfo, setUserInfo } = useContext(UserContext);
@@ -39,6 +41,24 @@ export default function Header() {
     localStorage.removeItem("token");
     setUserInfo(null);
   };
+
+  useEffect(() => {
+    var token = localStorage.getItem("token");
+    if (token) {
+      axios
+        .get(apiLink + "/api/User", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) =>
+          setUserInfo({
+            email: res.data.email,
+            firstName: res.data.firstName,
+            lastName: res.data.lastName,
+          })
+        )
+        .catch((er) => console.log(er));
+    }
+  }, []);
   return (
     <Navbar
       disableAnimation
