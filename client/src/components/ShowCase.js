@@ -1,17 +1,24 @@
-import { Image, Input } from "@nextui-org/react";
+'use client';
 import React from "react";
-import Countdown from "react-countdown";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import ItemCard from "./ItemCard";
 import useEmblaCarousel from "embla-carousel-react";
+import { NextButton, PrevButton, usePrevNextButtons } from "./EmblaCarouselArrowButtons";
 
 function ShowCase() {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
-    
   });
+  const {
+    prevBtnDisabled,
+    nextBtnDisabled,
+    onPrevButtonClick,
+    onNextButtonClick,
+  } = usePrevNextButtons(emblaApi);
   return (
-    <section className="container-full">
-      <div className="embla__viewport" ref={emblaRef}>
+    <section className="container-w lg:px-8 flex relative group">
+      <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
+      <div className="embla__viewport max-lg:px-6" ref={emblaRef}>
         <div className="embla__container gap-4">
           <ItemCard key={1} />
           <ItemCard key={2} />
@@ -25,6 +32,7 @@ function ShowCase() {
           <ItemCard key={10} />
         </div>
       </div>
+      <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
     </section>
   );
 }
