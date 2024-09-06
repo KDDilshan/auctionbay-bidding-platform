@@ -97,7 +97,7 @@ export default function Header() {
         </NavbarItem>
       </NavbarContent>
 
-      <NavbarContent justify="end">
+      <NavbarContent justify="end" className="hidden sm:flex">
         <Input
           classNames={{
             base: "max-w-full sm:max-w-[25rem] h-10",
