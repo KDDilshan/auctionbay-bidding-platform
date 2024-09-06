@@ -64,7 +64,7 @@ const Btn = ({ children, onClick, disabled }) => {
     <>
       {!disabled && (
         <button
-          className="h-full w-full flex items-center justify-center invisible group-hover:visible hover:bg-zinc-800 rounded-xl text-2xl"
+          className="h-full w-full flex items-center justify-center invisible group-hover/show:visible hover:bg-zinc-800 rounded-xl text-2xl"
           type="button"
           onClick={onClick}
           disabled={disabled}

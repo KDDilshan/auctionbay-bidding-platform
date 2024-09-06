@@ -16,12 +16,12 @@ function ShowCase() {
     onNextButtonClick,
   } = usePrevNextButtons(emblaApi);
   return (
-    <section className="container-w flex flex-col gap-2">
+    <section className="container-w flex flex-col gap-1">
       <h1 className="max-lg:px-6 lg:px-8 text-2xl font-bold">Top Collector Buys Today</h1>
-      <div className="w-full lg:px-8 flex relative group">
+      <div className="w-full lg:px-8 flex relative group/show">
         <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
         <div className="embla__viewport max-lg:px-6" ref={emblaRef}>
-          <div className="embla__container gap-4">
+          <div className="embla__container gap-4 py-2">
             <ItemCard key={1} />
             <ItemCard key={2} />
             <ItemCard key={3} />
