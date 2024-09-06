@@ -26,7 +26,7 @@ function ItemCard() {
     return time < 10 ? `0${time}` : time;
   }
   return (
-    <div className="bg-zinc-900 w-[300px] rounded-xl overflow-hidden">
+    <div className="bg-zinc-900 w-[280px] shrink-0 grow-0 rounded-xl overflow-hidden">
       <div className="w-full h-[170px] overflow-hidden">
         <Image
           radius="none"
