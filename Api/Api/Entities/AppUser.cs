@@ -6,5 +6,17 @@ namespace Api.Entities
     {
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
+
+        public int ReqId { get; set; }
+
+        public Request Requests { get; set; }
+
+        public List<Nft> nfts { get; set; }
+
+        public List<Auction> auctions { get; set; } 
+
+        public List<Bid> Bids { get; set; }
+
+      
     }
 }
