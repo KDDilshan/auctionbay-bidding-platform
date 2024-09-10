@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Api.Data;
 using Api.Entities;
+using Api.Services.EmailService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,6 +71,9 @@ builder.Services.AddSwaggerGen(c => {
     });
 
 });
+
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

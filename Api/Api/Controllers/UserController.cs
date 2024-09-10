@@ -2,6 +2,7 @@
 using Api.Dtos;
 using Api.Entities;
 using Api.Mapping;
+using Api.Services.EmailService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -21,13 +22,15 @@ namespace Api.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly AppDbContext _context;
+        private readonly IEmailService _emailService;
 
-        public UserController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, AppDbContext context)
+        public UserController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, AppDbContext context,IEmailService emailService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
             _context = context;
+            _emailService = emailService;
         }
 
         [HttpPost("register")]
@@ -42,6 +45,8 @@ namespace Api.Controllers
             if (!result.Succeeded)return BadRequest(result.Errors);
 
             await _userManager.AddToRoleAsync(user, "Buyer");
+
+            _emailService.SendEmail(new EmailDto { To = registerDto.Email, Subject = "Welcome to Nftfy – Registration Successful!", Body = "<h1>Welcome to Nftfy!</h1><p>We’re excited to have you on board. Your account has been successfully created, and you’re now part of a community where opportunities await.</p>" });
 
             return Ok("User created successfully");
         }
