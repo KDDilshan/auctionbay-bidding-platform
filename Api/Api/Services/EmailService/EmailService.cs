@@ -9,9 +9,12 @@ namespace Api.Services.EmailService
     public class EmailService : IEmailService
     {
         private readonly IConfiguration _config;
-        public EmailService(IConfiguration config)
+        private readonly SmtpClient _smtpClient;
+        public EmailService(IConfiguration config, SmtpClient smtpClient)
         {
             _config = config;
+            _smtpClient = smtpClient;
+            Connect();
         }
         public void SendEmail(EmailDto request)
         {
@@ -23,11 +26,24 @@ namespace Api.Services.EmailService
             {
                 Text = request.Body
             };
-            using var smtp = new SmtpClient();
-            smtp.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
-            smtp.Authenticate(_config.GetSection("EmailUsername").Value, _config.GetSection("EmailPassword").Value);
-            smtp.Send(email);
-            smtp.Disconnect(true);
+            Connect();
+            _smtpClient.Send(email);
+        }
+
+        private void Connect()
+        {
+            if (!_smtpClient.IsConnected)
+            {
+                _smtpClient.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
+                _smtpClient.Authenticate(_config.GetSection("EmailUsername").Value, _config.GetSection("EmailPassword").Value);
+            }
+        }
+        public void Disconnect()
+        {
+            if (_smtpClient.IsConnected)
+            {
+                _smtpClient.Disconnect(true);
+            }
         }
     }
 }

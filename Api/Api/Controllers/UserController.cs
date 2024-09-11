@@ -46,7 +46,7 @@ namespace Api.Controllers
 
             await _userManager.AddToRoleAsync(user, "Buyer");
 
-            _emailService.SendEmail(new EmailDto { To = registerDto.Email, Subject = "Welcome to Nftfy – Registration Successful!", Body = "<h1>Welcome to Nftfy!</h1><p>We’re excited to have you on board. Your account has been successfully created, and you’re now part of a community where opportunities await.</p>" });
+            _emailService.SendEmail(new EmailDto { To = "nipunavishka123@gmail.com", Subject = "Welcome to Nftfy – Registration Successful!", Body = "<h1>Welcome to Nftfy!</h1><p>We’re excited to have you on board. Your account has been successfully created, and you’re now part of a community where opportunities await.</p>" });
 
             return Ok("User created successfully");
         }
