@@ -1,7 +1,13 @@
-﻿namespace Api.Entities
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Api.Entities
 {
     public class Bid
+
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
        public DateTime BidDate { get; set; }= DateTime.Now;
