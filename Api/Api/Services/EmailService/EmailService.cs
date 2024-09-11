@@ -3,6 +3,7 @@ using MailKit.Security;
 using MimeKit.Text;
 using MimeKit;
 using MailKit.Net.Smtp;
+using Api.Models;
 
 namespace Api.Services.EmailService
 {
@@ -10,21 +11,23 @@ namespace Api.Services.EmailService
     {
         private readonly IConfiguration _config;
         private readonly SmtpClient _smtpClient;
+
         public EmailService(IConfiguration config, SmtpClient smtpClient)
         {
             _config = config;
             _smtpClient = smtpClient;
             Connect();
         }
-        public void SendEmail(EmailDto request)
+
+        public void SendEmail(Email request)
         {
             var email = new MimeMessage();
             email.From.Add(MailboxAddress.Parse(_config.GetSection("EmailUsername").Value));
-            email.To.Add(MailboxAddress.Parse(request.To));
-            email.Subject = request.Subject;
+            email.To.Add(MailboxAddress.Parse(request.to));
+            email.Subject = request.subject;
             email.Body = new TextPart(TextFormat.Html)
             {
-                Text = request.Body
+                Text = request.body
             };
             Connect();
             _smtpClient.Send(email);
@@ -38,6 +41,7 @@ namespace Api.Services.EmailService
                 _smtpClient.Authenticate(_config.GetSection("EmailUsername").Value, _config.GetSection("EmailPassword").Value);
             }
         }
+
         public void Disconnect()
         {
             if (_smtpClient.IsConnected)
@@ -45,5 +49,7 @@ namespace Api.Services.EmailService
                 _smtpClient.Disconnect(true);
             }
         }
+
+
     }
 }
