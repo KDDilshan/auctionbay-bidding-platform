@@ -6,6 +6,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Api.Data;
 using Api.Entities;
+using Api.Services.EmailService;
+using MailKit.Net.Smtp;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,7 +72,16 @@ builder.Services.AddSwaggerGen(c => {
     });
 
 });
+
+builder.Services.AddSingleton<SmtpClient>();
+builder.Services.AddSingleton<IEmailService, EmailService>();
+
 var app = builder.Build();
+
+app.Lifetime.ApplicationStopping.Register(() =>
+{
+    app.Services.GetRequiredService<SmtpClient>().Disconnect(true);
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

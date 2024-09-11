@@ -2,6 +2,8 @@
 using Api.Dtos;
 using Api.Entities;
 using Api.Mapping;
+using Api.Models;
+using Api.Services.EmailService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -21,13 +23,15 @@ namespace Api.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly AppDbContext _context;
+        private readonly IEmailService _emailService;
 
-        public UserController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, AppDbContext context)
+        public UserController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, AppDbContext context,IEmailService emailService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
             _context = context;
+            _emailService = emailService;
         }
 
         [HttpPost("register")]
@@ -42,6 +46,8 @@ namespace Api.Controllers
             if (!result.Succeeded)return BadRequest(result.Errors);
 
             await _userManager.AddToRoleAsync(user, "Buyer");
+
+            _emailService.SendEmail(new Email.EmailBuilder().To(user).Register().Build());
 
             return Ok("User created successfully");
         }
