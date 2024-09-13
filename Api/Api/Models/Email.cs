@@ -1,4 +1,5 @@
-﻿using Api.Entities;
+﻿using Api.Dtos;
+using Api.Entities;
 
 namespace Api.Models
 {
@@ -20,9 +21,9 @@ namespace Api.Models
             public string to { get; set; }
             public string subject { get; set; }
             public string body { get; set; }
-            private AppUser user { get; set; }
+            private UserDto user { get; set; }
 
-            public EmailBuilder To(AppUser user)
+            public EmailBuilder To(UserDto user)
             {
                 this.to = user.Email;
                 this.user = user;
