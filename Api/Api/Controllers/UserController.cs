@@ -47,7 +47,7 @@ namespace Api.Controllers
 
             await _userManager.AddToRoleAsync(user, "Buyer");
 
-            _emailService.SendEmail(new Email.EmailBuilder().To(user).Register().Build());
+            _emailService.SendEmail(new Email.EmailBuilder().To(user.ToDto()).Register().Build());
 
             return Ok("User created successfully");
         }
@@ -103,12 +103,7 @@ namespace Api.Controllers
                 });
             }
 
-            return Ok(new UserDto
-            {
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-            });
+            return Ok(user.ToDto());
         }
 
         private string GenerateToken(AppUser user)

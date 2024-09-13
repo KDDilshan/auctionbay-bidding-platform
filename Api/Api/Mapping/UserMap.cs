@@ -15,5 +15,15 @@ namespace Api.Mapping
                 UserName = registerDto.Email
             };
         }
+
+        public static UserDto ToDto(this AppUser appUser)
+        {
+            return new UserDto
+            {
+                FirstName = appUser.FirstName,
+                LastName = appUser.LastName,
+                Email = appUser.Email
+            };
+        }
     }
 }
