@@ -19,7 +19,7 @@ namespace Api.Entities
 
         public DateTime EndDate { get; set; }
 
-         public Double Price { get; set; }
+        public Double Price { get; set; }
 
         public int NftId {  get; set; }
 
@@ -30,11 +30,6 @@ namespace Api.Entities
         public string UserID { get; set; }
 
         public AppUser AppUser { get; set; }
-
-
-
-
-
 
     }
 }

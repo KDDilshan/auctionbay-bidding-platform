@@ -6,7 +6,7 @@
   @apply max-w-[1628px] w-full px-6 lg:px-8;
 }
 
-.cotainer-w{
+.cotainer-w {
   @apply max-w-[1628px] w-full;
 }
 
@@ -56,4 +56,23 @@
     flex: 0 0 var(--slide-size-lg);
     padding-left: var(--slide-spacing-lg);
   }
+}
+
+.account h1 {
+  @apply text-2xl;
+}
+.account h2 {
+  @apply font-bold mt-6;
+}
+.account p {
+  @apply text-sm text-zinc-400 mt-1;
+}
+.account-input-container {
+  @apply flex justify-between;
+}
+.account-input {
+  @apply w-[49%] mt-3;
+}
+.account-button{
+  @apply mt-3;
 }

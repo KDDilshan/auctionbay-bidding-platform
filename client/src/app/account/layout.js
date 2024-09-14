@@ -17,7 +17,7 @@ function layout({ children }) {
   ];
   return (
     <div className="max-w-[1270px] w-full mx-auto flex gap-5 my-10 items-start">
-      <div className="w-[297.5px] bg-zinc-900 rounded-md border border-zinc-700">
+      <div className="w-[297.5px] bg-zinc-900 rounded-md border border-zinc-700 overflow-hidden">
         {links.map((link) => (
           <Link
             href={link.href}
