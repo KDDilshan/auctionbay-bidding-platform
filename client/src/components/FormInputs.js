@@ -7,11 +7,12 @@ import { HiEyeSlash, HiMiniEye } from "react-icons/hi2";
 let regex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]{8,15}$/;
 
-function Email({ lable, value, setState }) {
+function Email({ lable, value, setState, className }) {
   return (
     <Input
       isRequired
       type="email"
+      className={className ? className : ""}
       variant={"bordered"}
       label={lable}
       value={value}
@@ -24,11 +25,12 @@ function Email({ lable, value, setState }) {
   );
 }
 
-function Password({ lable, value, setState, validate }) {
+function Password({ lable, value, setState, validate, className }) {
   const [passVisible, setPassVisible] = useState(false);
   return (
     <Input
       type={passVisible ? "text" : "password"}
+      className={className ? className : ""}
       variant={"bordered"}
       label={lable}
       isRequired

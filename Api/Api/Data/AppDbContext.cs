@@ -73,11 +73,7 @@ namespace Api.Data
                 new IdentityRole { Id = "2", Name = "Buyer", NormalizedName = "BUYER" },
                 new IdentityRole { Id = "3", Name = "Seller", NormalizedName = "SELLER" }
             );
-                
-            
-
-         
-            
+           
         }
     }
 }
