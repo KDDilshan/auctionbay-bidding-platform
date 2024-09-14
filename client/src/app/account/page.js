@@ -82,20 +82,22 @@ const[email, setEmail] = useState("");
         including your wallet balance, will be permanently removed and cannot be
         recovered.
       </p>
-      <FormInputs.Password
-        className="account-input"
-        lable="Current Password"
-        value={email}
-        setState={setEmail}
-      />
-      <Button
-        type="submit"
-        className="account-button"
-        color="danger"
-        variant="faded"
-      >
-        REQUEST ACCOUNT DELETE
-      </Button>
+      <form>
+        <FormInputs.Password
+          className="account-input"
+          lable="Current Password"
+          value={email}
+          setState={setEmail}
+        />
+        <Button
+          type="submit"
+          className="account-button"
+          color="danger"
+          variant="faded"
+        >
+          REQUEST ACCOUNT DELETE
+        </Button>
+      </form>
     </div>
   );
 }
