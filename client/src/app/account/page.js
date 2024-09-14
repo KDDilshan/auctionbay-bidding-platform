@@ -4,9 +4,9 @@ import { Button, Input } from "@nextui-org/react";
 import React, { useState } from "react";
 
 function page() {
-const[email, setEmail] = useState("");
+  const [email, setEmail] = useState("");
   return (
-    <div className="account">
+    <>
       <h1>Account Settings</h1>
       <p>Manage your account’s details.</p>
       <h2>Personal Details</h2>
@@ -98,7 +98,7 @@ const[email, setEmail] = useState("");
           REQUEST ACCOUNT DELETE
         </Button>
       </form>
-    </div>
+    </>
   );
 }
 

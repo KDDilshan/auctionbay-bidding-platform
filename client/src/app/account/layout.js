@@ -47,8 +47,7 @@ function layout({ children }) {
             </Link>
           ))}
         </div>
-        <div className="bg-zinc-900 sm:flex-1 p-8 rounded-md border border-zinc-700">
-          <h1>{pathname}</h1>
+        <div className="bg-zinc-900 sm:flex-1 p-8 rounded-md border border-zinc-700 account">
           {children}
         </div>
       </div>
