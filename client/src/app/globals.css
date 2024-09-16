@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 .container-full {
-  @apply max-w-[1628px] w-full px-6 lg:px-8;
+  @apply max-w-[1628px] w-full px-6 lg:px-8 mx-auto;
 }
 
-.cotainer-w {
-  @apply max-w-[1628px] w-full;
+.container-w {
+  @apply max-w-[1628px] w-full mx-auto;
 }
 
 .embla {

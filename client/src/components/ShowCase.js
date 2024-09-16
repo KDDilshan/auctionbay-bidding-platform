@@ -17,7 +17,9 @@ function ShowCase() {
   } = usePrevNextButtons(emblaApi);
   return (
     <section className="container-w flex flex-col gap-1">
-      <h1 className="max-lg:px-6 lg:px-8 text-2xl font-bold">Top Collector Buys Today</h1>
+      <h1 className="max-lg:px-6 lg:px-8 text-2xl font-bold">
+        Top Collector Buys Today
+      </h1>
       <div className="w-full lg:px-8 flex relative group/show">
         <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
         <div className="embla__viewport max-lg:px-6" ref={emblaRef}>
