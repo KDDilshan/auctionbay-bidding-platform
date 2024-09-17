@@ -4,7 +4,7 @@ import Image from "next/image";
 
 function Hero() {
   return (
-    <div className="container-w px-6 md:px-8 lg:px-32 relative flex items-center justify-between py-5">
+    <div className="relative flex items-center justify-between px-6 py-5 container-w md:px-8 lg:px-32">         
       <div>
         <h1 className="font-extrabold leading-tight text-white text-7xl">
           Discover & Collect <br />
@@ -12,7 +12,7 @@ function Hero() {
           Digital <br /> Artworks
         </h1>
 
-        <p className="mt-4 text-lg text-white ">
+        <p className="mt-4 text-lg text-white">
           Buy, sell, and discover exclusive digital assets in the world's most
           vibrant NFT marketplace.
           <br />
