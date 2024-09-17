@@ -8,6 +8,8 @@ using Api.Data;
 using Api.Entities;
 using Api.Services.EmailService;
 using MailKit.Net.Smtp;
+using Api.Services.FileService;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,8 +39,6 @@ builder.Services.AddAuthentication(opt => {
         ValidAudience = JWTSetting["ValidAudience"],
         ValidIssuer = JWTSetting["ValidIssuer"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWTSetting.GetSection("securityKey").Value!))
-
-
     };
 });
 
@@ -76,6 +76,16 @@ builder.Services.AddSwaggerGen(c => {
 builder.Services.AddSingleton<SmtpClient>();
 builder.Services.AddSingleton<IEmailService, EmailService>();
 
+builder.Services.AddTransient<IFileService, FileService>();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.WithOrigins("*").AllowAnyMethod().AllowAnyHeader(); ;
+        });
+});
+
 var app = builder.Build();
 
 app.Lifetime.ApplicationStopping.Register(() =>
@@ -91,6 +101,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+           Path.Combine(builder.Environment.ContentRootPath, "wwwroot")),
+    RequestPath = "/wwwroot"
+});
 
 app.UseCors(options =>
 {
