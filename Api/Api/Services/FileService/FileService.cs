@@ -5,14 +5,14 @@ namespace Api.Services.FileService
 {
     public class FileService(IWebHostEnvironment environment) : IFileService
     {
-        public void DeleteFile(string fileNameWithExtension)
+        public void DeleteFile(UploadedFile uploadedFile)
         {
-            if (string.IsNullOrEmpty(fileNameWithExtension))
+            if (string.IsNullOrEmpty(uploadedFile.name))
             {
-                throw new ArgumentNullException(nameof(fileNameWithExtension));
+                throw new ArgumentNullException(nameof(uploadedFile.name));
             }
-            var webRootPath = environment.WebRootPath;
-            var path = Path.Combine(webRootPath, $"uploads", fileNameWithExtension);
+            var RootPath = uploadedFile.isPublic ? environment.WebRootPath : environment.ContentRootPath;
+            var path = Path.Combine(RootPath, $"uploads", uploadedFile.name);
 
             if (!File.Exists(path))
             {
