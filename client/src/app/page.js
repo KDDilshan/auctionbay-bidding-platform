@@ -4,7 +4,6 @@ import Categories from "@/components/Categories";
 import Creators from "@/components/Creators";
 import Hero from "@/components/Hero";
 import ShowCase from "@/components/ShowCase";
-import CreatorCard from "@/components/CreatorCard";
 
 export default function Home() {
   return (

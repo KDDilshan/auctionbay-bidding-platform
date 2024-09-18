@@ -20,7 +20,7 @@ function CreatorCard({backGroundImage, creatorName, creatorProfileImage, current
 
 
   return (
-    <div className="relative w-full h-full max-w-xs mx-auto bg-center bg-cover rounded-lg shadow-lg" 
+    <div className="relative w-full h-full max-w-xs mx-auto bg-center bg-cover rounded-lg shadow-lg " 
         style={{ backgroundImage: `url(${backGroundImage})` }} >
       <div className="relative flex justify-center mt-12">
         <Image
@@ -33,7 +33,7 @@ function CreatorCard({backGroundImage, creatorName, creatorProfileImage, current
       </div>
 
       
-      <div className="p-6 mt-4 text-center text-white bg-gray-800 rounded-lg ">
+      <div className="p-6 mt-4 text-center text-white bg-gray-800 rounded-lg">
         <h3 className="text-xl font-semibold ">{creatorName}</h3>
         <p className="mt-2 font-semibold text-yellow-500">Followers: {followers}</p>
         
