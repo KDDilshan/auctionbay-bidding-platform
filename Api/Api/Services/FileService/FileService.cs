@@ -1,4 +1,6 @@
 ﻿
+using Api.Models;
+
 namespace Api.Services.FileService
 {
     public class FileService(IWebHostEnvironment environment) : IFileService
@@ -19,15 +21,15 @@ namespace Api.Services.FileService
             File.Delete(path);
         }
 
-        public async Task<string> SaveFileAsync(IFormFile imageFile, string[] allowedFileExtensions)
+        public async Task<string> SaveFileAsync(UploadedFile uploadedFile)
         {
-            if (imageFile == null)
+            if (uploadedFile.file == null)
             {
-                throw new ArgumentNullException(nameof(imageFile));
+                throw new ArgumentNullException(nameof(uploadedFile.file));
             }
 
-            var webRootPath = environment.WebRootPath;
-            var path = Path.Combine(webRootPath, "uploads");
+            var RootPath = uploadedFile.isPublic? environment.WebRootPath:environment.ContentRootPath;
+            var path = Path.Combine(RootPath, "uploads");
 
             if (!Directory.Exists(path))
             {
@@ -35,17 +37,17 @@ namespace Api.Services.FileService
             }
 
             // Check the allowed extenstions
-            var ext = Path.GetExtension(imageFile.FileName);
-            if (!allowedFileExtensions.Contains(ext))
+            var ext = Path.GetExtension(uploadedFile.file.FileName);
+            if (!uploadedFile.formats.Contains(ext))
             {
-                throw new ArgumentException($"Only {string.Join(",", allowedFileExtensions)} are allowed.");
+                throw new ArgumentException($"Only {string.Join(",", uploadedFile.formats)} are allowed.");
             }
 
             // generate a unique filename
             var fileName = $"{Guid.NewGuid().ToString()}{ext}";
             var fileNameWithPath = Path.Combine(path, fileName);
             using var stream = new FileStream(fileNameWithPath, FileMode.Create);
-            await imageFile.CopyToAsync(stream);
+            await uploadedFile.file.CopyToAsync(stream);
             return fileName;
         }
     }
