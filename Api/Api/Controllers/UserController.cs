@@ -4,10 +4,13 @@ using Api.Entities;
 using Api.Mapping;
 using Api.Models;
 using Api.Services.EmailService;
+using Api.Services.FileService;
+using Api.Services.JwtService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -24,14 +27,18 @@ namespace Api.Controllers
         private readonly IConfiguration _configuration;
         private readonly AppDbContext _context;
         private readonly IEmailService _emailService;
+        private readonly IFileService _fileService;
+        private readonly IJwtService _jwtService;
 
-        public UserController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, AppDbContext context,IEmailService emailService)
+        public UserController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, AppDbContext context,IEmailService emailService,IFileService fileService,IJwtService jwtService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
             _context = context;
             _emailService = emailService;
+            _fileService = fileService;
+            this._jwtService = jwtService;
         }
 
         [HttpPost("register")]
@@ -76,7 +83,7 @@ namespace Api.Controllers
                     Message = "Invalid Password."
                 });
             }
-            var token = GenerateToken(user);
+            var token = _jwtService.GenerateToken(user);
 
             return Ok(new AuthResponseDto
             {
@@ -104,46 +111,6 @@ namespace Api.Controllers
             }
 
             return Ok(user.ToDto());
-        }
-
-        private string GenerateToken(AppUser user)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            var key = Encoding.ASCII
-            .GetBytes(_configuration.GetSection("JWTSetting").GetSection("securityKey").Value!);
-
-            var roles = _userManager.GetRolesAsync(user).Result;
-
-            List<Claim> claims =
-            [
-                new (JwtRegisteredClaimNames.Email,user.Email??""),
-                new (JwtRegisteredClaimNames.Name,user.FirstName??""),
-                new (JwtRegisteredClaimNames.NameId,user.Id ??""),
-                new (JwtRegisteredClaimNames.Aud,
-                _configuration.GetSection("JWTSetting").GetSection("validAudience").Value!),
-                new (JwtRegisteredClaimNames.Iss,_configuration.GetSection("JWTSetting").GetSection("validIssuer").Value!)
-            ];
-
-
-            foreach (var role in roles)
-
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddDays(1),
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256
-                )
-            };
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
         }
     }
 }
