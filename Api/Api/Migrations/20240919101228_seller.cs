@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Api.Migrations
 {
     /// <inheritdoc />
-    public partial class fixednewerror : Migration
+    public partial class seller : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -187,19 +187,22 @@ namespace Api.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RequestDeails = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RequestDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AcceptDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserID = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IdPhotoPath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Requests", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Requests_AspNetUsers_UserID",
-                        column: x => x.UserID,
+                        name: "FK_Requests_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -332,9 +335,9 @@ namespace Api.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Requests_UserID",
+                name: "IX_Requests_UserId",
                 table: "Requests",
-                column: "UserID",
+                column: "UserId",
                 unique: true);
         }
 

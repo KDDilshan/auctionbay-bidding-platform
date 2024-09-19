@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240907160612_fixednewerror")]
-    partial class fixednewerror
+    [Migration("20240919101228_seller")]
+    partial class seller
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -197,7 +197,7 @@ namespace Api.Migrations
                     b.ToTable("Nfts");
                 });
 
-            modelBuilder.Entity("Api.Entities.Request", b =>
+            modelBuilder.Entity("Api.Entities.SellerRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -208,20 +208,28 @@ namespace Api.Migrations
                     b.Property<DateTime>("AcceptDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("RequestDate")
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("RequestDeails")
+                    b.Property<string>("IdPhotoPath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserID")
+                    b.Property<DateTime>("RequestDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserID")
+                    b.HasIndex("UserId")
                         .IsUnique();
 
                     b.ToTable("Requests");
@@ -429,12 +437,12 @@ namespace Api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Api.Entities.Request", b =>
+            modelBuilder.Entity("Api.Entities.SellerRequest", b =>
                 {
                     b.HasOne("Api.Entities.AppUser", "User")
                         .WithOne("Requests")
-                        .HasForeignKey("Api.Entities.Request", "UserID")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("Api.Entities.SellerRequest", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
