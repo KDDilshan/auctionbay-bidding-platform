@@ -16,7 +16,7 @@ namespace Api.Data
         public DbSet<Nft> Nfts { get; set; }
         public DbSet<Auction> Auctions { get; set; }
         public DbSet<Bid> Bids { get; set; }
-        public DbSet<Request> Requests { get; set; }
+        public DbSet<SellerRequest> Requests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -54,8 +54,8 @@ namespace Api.Data
             builder.Entity<AppUser>()
                 .HasOne(u => u.Requests)
                 .WithOne(r => r.User)
-                .HasForeignKey<Request>(r => r.UserID)
-                .OnDelete(DeleteBehavior.NoAction);
+                .HasForeignKey<SellerRequest>(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Nft -> Auctions (One Nft can have many Auctions)
             builder.Entity<Nft>()
