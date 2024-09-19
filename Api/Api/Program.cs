@@ -11,6 +11,7 @@ using MailKit.Net.Smtp;
 using Api.Services.FileService;
 using Microsoft.Extensions.FileProviders;
 using Api.Services.JwtService;
+using Api.Services.UserService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,6 +76,7 @@ builder.Services.AddSwaggerGen(c => {
 });
 
 builder.Services.AddTransient<IJwtService, JwtService>();
+builder.Services.AddTransient<IUserService, UserService>();
 
 builder.Services.AddSingleton<SmtpClient>();
 builder.Services.AddSingleton<IEmailService, EmailService>();

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Api.Migrations
 {
     /// <inheritdoc />
-    public partial class seller : Migration
+    public partial class sellerreq : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -192,7 +192,8 @@ namespace Api.Migrations
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     IdPhotoPath = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -269,6 +270,16 @@ namespace Api.Migrations
                     { "2", null, "Buyer", "BUYER" },
                     { "3", null, "Seller", "SELLER" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ReqId", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "admin-id-001", 0, "530c130f-8dc8-4976-8a02-9353b082a129", "admin@admin.com", true, "Admin", "Admin", false, null, "ADMIN@ADMIN.COM", "ADMIN", "AQAAAAIAAYagAAAAEFnDG6dZjJ7g3SO2nts56vYm6T0j0apVFVhwEwUUhVmN2hIi3t50PCKdDI4mo36JHg==", null, false, 0, "2459a2e0-6294-4e35-9324-a4ed81322c24", false, "admin" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[] { "1", "admin-id-001" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

@@ -94,6 +94,27 @@ namespace Api.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "admin-id-001",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "530c130f-8dc8-4976-8a02-9353b082a129",
+                            Email = "admin@admin.com",
+                            EmailConfirmed = true,
+                            FirstName = "Admin",
+                            LastName = "Admin",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@ADMIN.COM",
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFnDG6dZjJ7g3SO2nts56vYm6T0j0apVFVhwEwUUhVmN2hIi3t50PCKdDI4mo36JHg==",
+                            PhoneNumberConfirmed = false,
+                            ReqId = 0,
+                            SecurityStamp = "2459a2e0-6294-4e35-9324-a4ed81322c24",
+                            TwoFactorEnabled = false,
+                            UserName = "admin"
+                        });
                 });
 
             modelBuilder.Entity("Api.Entities.Auction", b =>
@@ -219,6 +240,10 @@ namespace Api.Migrations
 
                     b.Property<DateTime>("RequestDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -364,6 +389,13 @@ namespace Api.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "admin-id-001",
+                            RoleId = "1"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>

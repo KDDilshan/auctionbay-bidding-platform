@@ -27,5 +27,7 @@ namespace Api.Entities
         [Required]
         [DataType(DataType.Date)]
         public DateTime DateOfBirth { get; set; }
+
+        public string Status { get; set; } = "Pending";
     }
 }
