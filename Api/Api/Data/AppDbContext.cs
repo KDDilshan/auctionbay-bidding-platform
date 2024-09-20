@@ -1,7 +1,4 @@
-﻿using System.Reflection.Emit;
-using Api.Dtos;
-using Api.Entities;
-using Api.Migrations;
+﻿using Api.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -70,23 +67,6 @@ namespace Api.Data
 
             base.OnModelCreating(builder);
 
-            //seeding nft to database
-            const int amountOfProductsToSeed = 5;
-            var productsToSeed = new Nft[amountOfProductsToSeed];
-            for (int i = 1; i <= amountOfProductsToSeed; i++)
-            {
-                productsToSeed[i - 1] = new Nft
-                {
-                    Id = i,
-                    Title = $"Product {i}",
-                    Description = $"Product {i} description. This is an amazing product with a price-quality balance you won't find anywhere ele.",
-                    Price = 1000 * i,
-                    UserId = "52d7665b-c5d8-4324-8975-0641870a4b53"
-                };
-            }
-            builder.Entity<Nft>().HasData(productsToSeed);
-
-
             // Seed roles
             builder.Entity<IdentityRole>().HasData(
                 new IdentityRole { Id = "1", Name = "Admin", NormalizedName = "ADMIN" },
@@ -119,48 +99,6 @@ namespace Api.Data
                     RoleId = "1" // "Admin" role
                 }
             );
-
-
-            //Seed auctiondetais
-            builder.Entity<Auction>().HasData(
-                new Auction
-                {
-                    Id=1,
-                    Title = "Sample Auction",
-                    Description = "This is a sample auction for an NFT.",
-                    StartDate = DateTime.Now,
-                    EndDate = DateTime.Now.AddDays(7),
-                    Price = 500,//string price
-                    NftId = 1,  // Assign the existing or newly created Nft Id
-                    UserID = "52d7665b-c5d8-4324-8975-0641870a4b53", // Assign the existing or newly created AppUser Id
-                   
-                }
-            );
-
-            //Seed Bidding
-            builder.Entity<Bid>().HasData(
-                new Bid
-                {
-                    Id = 1,
-                    BidDate = DateTime.Now.AddMinutes(10), // For example, 10 minutes after the first bid
-                    BidPrice = 2500, // Another bid
-                    AuctionID = 1, // Same auction
-                    UserId = "ac20c689-a227-41e9-a7e2-c475194510ab"
-                },
-                new Bid
-                {
-                    Id = 2,
-                    BidDate = DateTime.Now.AddMinutes(15), // For example, 10 minutes after the first bid
-                    BidPrice = 3000, // Another bid
-                    AuctionID = 1, // Same auction
-                    UserId = "c0eba42d-ff03-449f-bf08-b3d650c5dbeb"
-                }
-            );
-
-
-            
-
-
         }
     }
 }

@@ -100,7 +100,7 @@ namespace Api.Migrations
                         {
                             Id = "admin-id-001",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "530c130f-8dc8-4976-8a02-9353b082a129",
+                            ConcurrencyStamp = "09ef22ea-51ae-4c0c-b655-932af28d8def",
                             Email = "admin@admin.com",
                             EmailConfirmed = true,
                             FirstName = "Admin",
@@ -108,10 +108,10 @@ namespace Api.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFnDG6dZjJ7g3SO2nts56vYm6T0j0apVFVhwEwUUhVmN2hIi3t50PCKdDI4mo36JHg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJzt2jNpaQncCSiNUJUNZFjV2ydDPdhJ0qg2v3XzbYluPuxoxe61vYvbDgQB4CM+uQ==",
                             PhoneNumberConfirmed = false,
                             ReqId = 0,
-                            SecurityStamp = "2459a2e0-6294-4e35-9324-a4ed81322c24",
+                            SecurityStamp = "0542e095-cc35-41dd-9f0d-e220cd3b75e4",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -156,19 +156,6 @@ namespace Api.Migrations
                     b.HasIndex("UserID");
 
                     b.ToTable("Auctions");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "This is a sample auction for an NFT.",
-                            EndDate = new DateTime(2024, 9, 27, 11, 17, 18, 401, DateTimeKind.Local).AddTicks(617),
-                            NftId = 1,
-                            Price = 500L,
-                            StartDate = new DateTime(2024, 9, 20, 11, 17, 18, 401, DateTimeKind.Local).AddTicks(606),
-                            Title = "Sample Auction",
-                            UserID = "52d7665b-c5d8-4324-8975-0641870a4b53"
-                        });
                 });
 
             modelBuilder.Entity("Api.Entities.Bid", b =>
@@ -199,24 +186,6 @@ namespace Api.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Bids");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AuctionID = 1,
-                            BidDate = new DateTime(2024, 9, 20, 11, 27, 18, 401, DateTimeKind.Local).AddTicks(646),
-                            BidPrice = 2500L,
-                            UserId = "ac20c689-a227-41e9-a7e2-c475194510ab"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AuctionID = 1,
-                            BidDate = new DateTime(2024, 9, 20, 11, 32, 18, 401, DateTimeKind.Local).AddTicks(648),
-                            BidPrice = 3000L,
-                            UserId = "c0eba42d-ff03-449f-bf08-b3d650c5dbeb"
-                        });
                 });
 
             modelBuilder.Entity("Api.Entities.Nft", b =>
@@ -247,48 +216,6 @@ namespace Api.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Nfts");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Product 1 description. This is an amazing product with a price-quality balance you won't find anywhere ele.",
-                            Price = 1000L,
-                            Title = "Product 1",
-                            UserId = "52d7665b-c5d8-4324-8975-0641870a4b53"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Product 2 description. This is an amazing product with a price-quality balance you won't find anywhere ele.",
-                            Price = 2000L,
-                            Title = "Product 2",
-                            UserId = "52d7665b-c5d8-4324-8975-0641870a4b53"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Product 3 description. This is an amazing product with a price-quality balance you won't find anywhere ele.",
-                            Price = 3000L,
-                            Title = "Product 3",
-                            UserId = "52d7665b-c5d8-4324-8975-0641870a4b53"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "Product 4 description. This is an amazing product with a price-quality balance you won't find anywhere ele.",
-                            Price = 4000L,
-                            Title = "Product 4",
-                            UserId = "52d7665b-c5d8-4324-8975-0641870a4b53"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Description = "Product 5 description. This is an amazing product with a price-quality balance you won't find anywhere ele.",
-                            Price = 5000L,
-                            Title = "Product 5",
-                            UserId = "52d7665b-c5d8-4324-8975-0641870a4b53"
-                        });
                 });
 
             modelBuilder.Entity("Api.Entities.SellerRequest", b =>
