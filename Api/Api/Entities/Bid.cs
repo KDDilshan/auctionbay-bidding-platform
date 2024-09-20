@@ -12,7 +12,7 @@ namespace Api.Entities
 
        public DateTime BidDate { get; set; }= DateTime.Now;
 
-        public double BidPrice { get; set; }
+        public long BidPrice { get; set; }
 
         public int AuctionID {  get; set; }
 

@@ -11,15 +11,15 @@ namespace Api.Entities
         
         public int Id { get; set; }
 
-        public string title { get; set; }
+        public string Title { get; set; }
 
-        public string description { get; set; }
+        public string Description { get; set; }
 
         public DateTime StartDate { get; set; }
 
         public DateTime EndDate { get; set; }
 
-        public Double Price { get; set; }
+        public long Price { get; set; }
 
         public int NftId {  get; set; }
 
