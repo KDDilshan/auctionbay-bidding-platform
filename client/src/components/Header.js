@@ -19,11 +19,13 @@ import {
   Avatar,
 } from "@nextui-org/react";
 import { UserContext } from "@/app/providers";
-import { apiLink } from "@/configs";
+import { apiLink, getToken } from "@/configs";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const { userInfo, setUserInfo } = useContext(UserContext);
+  const router = useRouter();
   const menuItems = [
     "Profile",
     "Dashboard",
@@ -43,11 +45,11 @@ export default function Header() {
   };
 
   useEffect(() => {
-    var token = localStorage.getItem("token");
+    var token = getToken();
     if (token) {
       axios
         .get(apiLink + "/api/User", {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: token },
         })
         .then((res) =>
           setUserInfo({
@@ -128,7 +130,11 @@ export default function Header() {
               />
             </DropdownTrigger>
             <DropdownMenu aria-label="Profile Actions" variant="flat">
-              <DropdownItem key="profile" className="h-14 gap-2">
+              <DropdownItem
+                key="profile"
+                className="h-14 gap-2"
+                onClick={() => router.push("/account")}
+              >
                 <p className="font-semibold">Signed in as</p>
                 <p className="font-semibold">{userInfo.email}</p>
               </DropdownItem>
