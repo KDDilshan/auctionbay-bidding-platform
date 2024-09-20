@@ -1,9 +1,9 @@
 "use client";
-import { Input } from "@nextui-org/react";
+import { Image, Input } from "@nextui-org/react";
 import validator from "validator";
 import React, { useState } from "react";
 import { HiEyeSlash, HiMiniEye } from "react-icons/hi2";
-
+import { MdAddPhotoAlternate } from "react-icons/md";
 let regex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]{8,15}$/;
 
@@ -62,5 +62,29 @@ function Password({ lable, value, setState, validate, className }) {
   );
 }
 
-const FormInputs = { Email, Password };
+function ImagePicker({ value, setState, className }) {
+  return (
+    <div className="w-32 aspect-square rounded-xl relative flex flex-col items-center justify-center border-zinc-700 border-2 hover:border-zinc-500 text-zinc-500 over overflow-hidden">
+      <input
+        type="file"
+        id="id"
+        name="id"
+        accept="image/*"
+        className="w-full h-full opacity-0 absolute top-0 left-0 cursor-pointer bg-white"
+        required
+        onChange={(e) => setState(e.target.files[0])}
+      />
+      {value?.name ? (
+        <img
+          className="h-full w-full object-cover"
+          src={URL.createObjectURL(value)}
+        />
+      ) : (
+        <MdAddPhotoAlternate className="text-2xl" />
+      )}
+    </div>
+  );
+}
+
+const FormInputs = { Email, Password, ImagePicker };
 export default FormInputs;
