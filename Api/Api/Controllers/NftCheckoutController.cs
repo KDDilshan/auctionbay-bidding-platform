@@ -81,8 +81,7 @@ namespace Api.Controllers
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
                                 Name = cheakoutDto.NftTitle,
-                                Description = cheakoutDto.NftDescription,
-                                Images = new List<string> { cheakoutDto.NftImageUrl }
+                                Description = cheakoutDto.NftDescription
                             },
                         },
                         Quantity = 1,
