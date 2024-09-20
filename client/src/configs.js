@@ -13,3 +13,11 @@ export const toastConfig = {
 };
 
 export const apiLink = "https://localhost:7218";
+
+export function getToken() {
+  var token = localStorage.getItem("token");
+  if (!token) {
+    return null;
+  }
+  return `Bearer ${token}`;
+}
