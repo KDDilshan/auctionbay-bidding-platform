@@ -13,6 +13,7 @@ using Microsoft.Extensions.FileProviders;
 using Api.Services.JwtService;
 using Api.Services.UserService;
 using Stripe;
+using Api.Services.NftService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -85,7 +86,7 @@ builder.Services.AddSwaggerGen(c => {
 
 builder.Services.AddTransient<IJwtService, JwtService>();
 builder.Services.AddTransient<IUserService, UserService>();
-
+builder.Services.AddScoped<INftRepository, NftRepository>();
 
 builder.Services.AddSingleton<SmtpClient>();
 builder.Services.AddSingleton<IEmailService, EmailService>();
