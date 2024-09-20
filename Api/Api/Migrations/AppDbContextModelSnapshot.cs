@@ -104,29 +104,29 @@ namespace Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("NftId")
                         .HasColumnType("int");
 
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
+                    b.Property<long>("Price")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UserID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -135,6 +135,19 @@ namespace Api.Migrations
                     b.HasIndex("UserID");
 
                     b.ToTable("Auctions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "This is a sample auction for an NFT.",
+                            EndDate = new DateTime(2024, 9, 27, 11, 17, 18, 401, DateTimeKind.Local).AddTicks(617),
+                            NftId = 1,
+                            Price = 500L,
+                            StartDate = new DateTime(2024, 9, 20, 11, 17, 18, 401, DateTimeKind.Local).AddTicks(606),
+                            Title = "Sample Auction",
+                            UserID = "52d7665b-c5d8-4324-8975-0641870a4b53"
+                        });
                 });
 
             modelBuilder.Entity("Api.Entities.Bid", b =>
@@ -151,8 +164,8 @@ namespace Api.Migrations
                     b.Property<DateTime>("BidDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("BidPrice")
-                        .HasColumnType("float");
+                    b.Property<long>("BidPrice")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -165,6 +178,24 @@ namespace Api.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Bids");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AuctionID = 1,
+                            BidDate = new DateTime(2024, 9, 20, 11, 27, 18, 401, DateTimeKind.Local).AddTicks(646),
+                            BidPrice = 2500L,
+                            UserId = "ac20c689-a227-41e9-a7e2-c475194510ab"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AuctionID = 1,
+                            BidDate = new DateTime(2024, 9, 20, 11, 32, 18, 401, DateTimeKind.Local).AddTicks(648),
+                            BidPrice = 3000L,
+                            UserId = "c0eba42d-ff03-449f-bf08-b3d650c5dbeb"
+                        });
                 });
 
             modelBuilder.Entity("Api.Entities.Nft", b =>
@@ -175,6 +206,13 @@ namespace Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("Price")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -183,15 +221,53 @@ namespace Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("Nfts");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Product 1 description. This is an amazing product with a price-quality balance you won't find anywhere ele.",
+                            Price = 1000L,
+                            Title = "Product 1",
+                            UserId = "52d7665b-c5d8-4324-8975-0641870a4b53"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Product 2 description. This is an amazing product with a price-quality balance you won't find anywhere ele.",
+                            Price = 2000L,
+                            Title = "Product 2",
+                            UserId = "52d7665b-c5d8-4324-8975-0641870a4b53"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Product 3 description. This is an amazing product with a price-quality balance you won't find anywhere ele.",
+                            Price = 3000L,
+                            Title = "Product 3",
+                            UserId = "52d7665b-c5d8-4324-8975-0641870a4b53"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Product 4 description. This is an amazing product with a price-quality balance you won't find anywhere ele.",
+                            Price = 4000L,
+                            Title = "Product 4",
+                            UserId = "52d7665b-c5d8-4324-8975-0641870a4b53"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Description = "Product 5 description. This is an amazing product with a price-quality balance you won't find anywhere ele.",
+                            Price = 5000L,
+                            Title = "Product 5",
+                            UserId = "52d7665b-c5d8-4324-8975-0641870a4b53"
+                        });
                 });
 
             modelBuilder.Entity("Api.Entities.Request", b =>
