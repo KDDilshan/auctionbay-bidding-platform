@@ -94,6 +94,27 @@ namespace Api.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "admin-id-001",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "530c130f-8dc8-4976-8a02-9353b082a129",
+                            Email = "admin@admin.com",
+                            EmailConfirmed = true,
+                            FirstName = "Admin",
+                            LastName = "Admin",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@ADMIN.COM",
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFnDG6dZjJ7g3SO2nts56vYm6T0j0apVFVhwEwUUhVmN2hIi3t50PCKdDI4mo36JHg==",
+                            PhoneNumberConfirmed = false,
+                            ReqId = 0,
+                            SecurityStamp = "2459a2e0-6294-4e35-9324-a4ed81322c24",
+                            TwoFactorEnabled = false,
+                            UserName = "admin"
+                        });
                 });
 
             modelBuilder.Entity("Api.Entities.Auction", b =>
@@ -270,7 +291,7 @@ namespace Api.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Api.Entities.Request", b =>
+            modelBuilder.Entity("Api.Entities.SellerRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -281,20 +302,32 @@ namespace Api.Migrations
                     b.Property<DateTime>("AcceptDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("RequestDate")
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("RequestDeails")
+                    b.Property<string>("IdPhotoPath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserID")
+                    b.Property<DateTime>("RequestDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserID")
+                    b.HasIndex("UserId")
                         .IsUnique();
 
                     b.ToTable("Requests");
@@ -432,6 +465,13 @@ namespace Api.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "admin-id-001",
+                            RoleId = "1"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -502,12 +542,12 @@ namespace Api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Api.Entities.Request", b =>
+            modelBuilder.Entity("Api.Entities.SellerRequest", b =>
                 {
                     b.HasOne("Api.Entities.AppUser", "User")
                         .WithOne("Requests")
-                        .HasForeignKey("Api.Entities.Request", "UserID")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("Api.Entities.SellerRequest", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");

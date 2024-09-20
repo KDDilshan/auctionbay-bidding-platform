@@ -9,7 +9,7 @@ namespace Api.Entities
 
         public int ReqId { get; set; }
 
-        public Request Requests { get; set; }
+        public SellerRequest Requests { get; set; }
 
         public List<Nft> nfts { get; set; }
 

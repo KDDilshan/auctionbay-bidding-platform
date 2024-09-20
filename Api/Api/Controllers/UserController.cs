@@ -1,15 +1,13 @@
-﻿using Api.Data;
-using Api.Dtos;
+﻿using Api.Dtos;
 using Api.Entities;
 using Api.Mapping;
 using Api.Models;
 using Api.Services.EmailService;
-using Api.Services.FileService;
 using Api.Services.JwtService;
+using Api.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Api.Controllers
 {
@@ -18,22 +16,16 @@ namespace Api.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserManager<AppUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IConfiguration _configuration;
-        private readonly AppDbContext _context;
         private readonly IEmailService _emailService;
-        private readonly IFileService _fileService;
         private readonly IJwtService _jwtService;
+        private readonly IUserService _userService;
 
-        public UserController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, AppDbContext context,IEmailService emailService,IFileService fileService,IJwtService jwtService)
+        public UserController(UserManager<AppUser> userManager, IEmailService emailService,IJwtService jwtService,IUserService userService)
         {
             _userManager = userManager;
-            _roleManager = roleManager;
-            _configuration = configuration;
-            _context = context;
             _emailService = emailService;
-            _fileService = fileService;
-            this._jwtService = jwtService;
+            _jwtService = jwtService;
+            _userService = userService;
         }
 
         [HttpPost("register")]
@@ -94,8 +86,7 @@ namespace Api.Controllers
         [HttpGet]
         public async Task<ActionResult<UserDto>> GetUserDetail()
         {
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _userManager.FindByIdAsync(currentUserId!);
+            var user = await _userService.getCurrentUser();
 
             if (user is null)
             {

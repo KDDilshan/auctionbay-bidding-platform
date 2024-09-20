@@ -19,7 +19,7 @@ namespace Api.Data
         public DbSet<Nft> Nfts { get; set; }
         public DbSet<Auction> Auctions { get; set; }
         public DbSet<Bid> Bids { get; set; }
-        public DbSet<Request> Requests { get; set; }
+        public DbSet<SellerRequest> Requests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -57,8 +57,8 @@ namespace Api.Data
             builder.Entity<AppUser>()
                 .HasOne(u => u.Requests)
                 .WithOne(r => r.User)
-                .HasForeignKey<Request>(r => r.UserID)
-                .OnDelete(DeleteBehavior.NoAction);
+                .HasForeignKey<SellerRequest>(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Nft -> Auctions (One Nft can have many Auctions)
             builder.Entity<Nft>()
@@ -93,6 +93,33 @@ namespace Api.Data
                 new IdentityRole { Id = "2", Name = "Buyer", NormalizedName = "BUYER" },
                 new IdentityRole { Id = "3", Name = "Seller", NormalizedName = "SELLER" }
             );
+
+            //defualt admin data
+            var hasher = new PasswordHasher<AppUser>();
+            var adminUser = new AppUser
+            {
+                Id = "admin-id-001",
+                FirstName = "Admin",
+                LastName = "Admin",
+                UserName = "admin",
+                NormalizedUserName = "ADMIN",
+                Email = "admin@admin.com",
+                NormalizedEmail = "ADMIN@ADMIN.COM",
+                EmailConfirmed = true
+            };
+            adminUser.PasswordHash = hasher.HashPassword(adminUser, "12345@Ad");
+
+            builder.Entity<AppUser>().HasData(adminUser);
+
+            // Assign admin role to default admin user
+            builder.Entity<IdentityUserRole<string>>().HasData(
+                new IdentityUserRole<string>
+                {
+                    UserId = "admin-id-001",
+                    RoleId = "1" // "Admin" role
+                }
+            );
+
 
             //Seed auctiondetais
             builder.Entity<Auction>().HasData(
@@ -132,6 +159,7 @@ namespace Api.Data
 
 
             
+
 
         }
     }
