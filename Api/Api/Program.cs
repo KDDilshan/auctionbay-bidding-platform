@@ -11,6 +11,7 @@ using MailKit.Net.Smtp;
 using Api.Services.FileService;
 using Microsoft.Extensions.FileProviders;
 using Api.Services.JwtService;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,8 +22,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+
+
 builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
+
+
 
 builder.Services.AddAuthentication(opt => {
     opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -43,8 +48,10 @@ builder.Services.AddAuthentication(opt => {
     };
 });
 
+
+
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => {
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -76,10 +83,14 @@ builder.Services.AddSwaggerGen(c => {
 
 builder.Services.AddTransient<IJwtService, JwtService>();
 
+
 builder.Services.AddSingleton<SmtpClient>();
 builder.Services.AddSingleton<IEmailService, EmailService>();
 
-builder.Services.AddTransient<IFileService, FileService>();
+
+StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+
+builder.Services.AddTransient<IFileService, Api.Services.FileService.FileService>();
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(

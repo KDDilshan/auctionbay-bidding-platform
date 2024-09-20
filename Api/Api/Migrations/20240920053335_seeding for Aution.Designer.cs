@@ -4,6 +4,7 @@ using Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240920053335_seeding for Aution")]
+    partial class seedingforAution
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,10 +144,10 @@ namespace Api.Migrations
                         {
                             Id = 1,
                             Description = "This is a sample auction for an NFT.",
-                            EndDate = new DateTime(2024, 9, 27, 11, 17, 18, 401, DateTimeKind.Local).AddTicks(617),
+                            EndDate = new DateTime(2024, 9, 27, 11, 3, 34, 926, DateTimeKind.Local).AddTicks(1721),
                             NftId = 1,
                             Price = 500L,
-                            StartDate = new DateTime(2024, 9, 20, 11, 17, 18, 401, DateTimeKind.Local).AddTicks(606),
+                            StartDate = new DateTime(2024, 9, 20, 11, 3, 34, 926, DateTimeKind.Local).AddTicks(1705),
                             Title = "Sample Auction",
                             UserID = "52d7665b-c5d8-4324-8975-0641870a4b53"
                         });
@@ -178,24 +181,6 @@ namespace Api.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Bids");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AuctionID = 1,
-                            BidDate = new DateTime(2024, 9, 20, 11, 27, 18, 401, DateTimeKind.Local).AddTicks(646),
-                            BidPrice = 2500L,
-                            UserId = "ac20c689-a227-41e9-a7e2-c475194510ab"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AuctionID = 1,
-                            BidDate = new DateTime(2024, 9, 20, 11, 32, 18, 401, DateTimeKind.Local).AddTicks(648),
-                            BidPrice = 3000L,
-                            UserId = "c0eba42d-ff03-449f-bf08-b3d650c5dbeb"
-                        });
                 });
 
             modelBuilder.Entity("Api.Entities.Nft", b =>
