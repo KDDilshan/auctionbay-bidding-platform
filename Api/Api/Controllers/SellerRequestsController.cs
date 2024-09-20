@@ -13,6 +13,7 @@ using Api.Services.UserService;
 using Api.Mapping;
 using Api.Models;
 using Api.Services.FileService;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace Api.Controllers
 {
@@ -51,6 +52,33 @@ namespace Api.Controllers
             }
 
             return sellerRequest;
+        }
+
+        [Authorize]
+        [HttpGet("check")]
+        public async Task<ActionResult<String>> CheckSellerRequest()
+        {
+            var user = await _userService.getCurrentUser();
+
+            if (user is null)
+            {
+                return NotFound(new AuthResponseDto
+                {
+                    Message = "User not found"
+                });
+            }
+
+            var sellerRequest = await _context.Requests.FirstOrDefaultAsync(x => x.UserId == user.Id);
+
+            if (sellerRequest is null)
+            {
+                return NotFound(new AuthResponseDto
+                {
+                    Message = "Request not found"
+                });
+            }
+
+            return Ok(new { Message=sellerRequest.Status });
         }
 
         // PUT: api/SellerRequests/5
@@ -102,12 +130,18 @@ namespace Api.Controllers
                 });
             }
 
-            var idPhotoPath = await _fileService.SaveFileAsync(new UploadedFile.FileBuilder().File(sellerRequestDto.Id).AllowImg().MakePrivate().Build());
+            try
+            {
+                var idPhotoPath = await _fileService.SaveFileAsync(new UploadedFile.FileBuilder().File(sellerRequestDto.Id).AllowImg().MakePrivate().Build());
 
-            _context.Requests.Add(sellerRequestDto.ToEntity(user.Id, idPhotoPath));
-            await _context.SaveChangesAsync();
-
-            return Ok("Request sent successfully");
+                _context.Requests.Add(sellerRequestDto.ToEntity(user.Id, idPhotoPath));
+                await _context.SaveChangesAsync();
+                return Ok("Request sent successfully");
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // DELETE: api/SellerRequests/5
