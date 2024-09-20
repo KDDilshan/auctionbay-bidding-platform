@@ -4,6 +4,7 @@ using Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240920040821_new nft seed")]
+    partial class newnftseed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,27 +97,6 @@ namespace Api.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "admin-id-001",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "530c130f-8dc8-4976-8a02-9353b082a129",
-                            Email = "admin@admin.com",
-                            EmailConfirmed = true,
-                            FirstName = "Admin",
-                            LastName = "Admin",
-                            LockoutEnabled = false,
-                            NormalizedEmail = "ADMIN@ADMIN.COM",
-                            NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFnDG6dZjJ7g3SO2nts56vYm6T0j0apVFVhwEwUUhVmN2hIi3t50PCKdDI4mo36JHg==",
-                            PhoneNumberConfirmed = false,
-                            ReqId = 0,
-                            SecurityStamp = "2459a2e0-6294-4e35-9324-a4ed81322c24",
-                            TwoFactorEnabled = false,
-                            UserName = "admin"
-                        });
                 });
 
             modelBuilder.Entity("Api.Entities.Auction", b =>
@@ -135,8 +117,8 @@ namespace Api.Migrations
                     b.Property<int>("NftId")
                         .HasColumnType("int");
 
-                    b.Property<long>("Price")
-                        .HasColumnType("bigint");
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -156,19 +138,6 @@ namespace Api.Migrations
                     b.HasIndex("UserID");
 
                     b.ToTable("Auctions");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "This is a sample auction for an NFT.",
-                            EndDate = new DateTime(2024, 9, 27, 11, 17, 18, 401, DateTimeKind.Local).AddTicks(617),
-                            NftId = 1,
-                            Price = 500L,
-                            StartDate = new DateTime(2024, 9, 20, 11, 17, 18, 401, DateTimeKind.Local).AddTicks(606),
-                            Title = "Sample Auction",
-                            UserID = "52d7665b-c5d8-4324-8975-0641870a4b53"
-                        });
                 });
 
             modelBuilder.Entity("Api.Entities.Bid", b =>
@@ -185,8 +154,8 @@ namespace Api.Migrations
                     b.Property<DateTime>("BidDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<long>("BidPrice")
-                        .HasColumnType("bigint");
+                    b.Property<double>("BidPrice")
+                        .HasColumnType("float");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -199,24 +168,6 @@ namespace Api.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Bids");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AuctionID = 1,
-                            BidDate = new DateTime(2024, 9, 20, 11, 27, 18, 401, DateTimeKind.Local).AddTicks(646),
-                            BidPrice = 2500L,
-                            UserId = "ac20c689-a227-41e9-a7e2-c475194510ab"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AuctionID = 1,
-                            BidDate = new DateTime(2024, 9, 20, 11, 32, 18, 401, DateTimeKind.Local).AddTicks(648),
-                            BidPrice = 3000L,
-                            UserId = "c0eba42d-ff03-449f-bf08-b3d650c5dbeb"
-                        });
                 });
 
             modelBuilder.Entity("Api.Entities.Nft", b =>
@@ -291,7 +242,7 @@ namespace Api.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Api.Entities.SellerRequest", b =>
+            modelBuilder.Entity("Api.Entities.Request", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -302,32 +253,20 @@ namespace Api.Migrations
                     b.Property<DateTime>("AcceptDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("IdPhotoPath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("RequestDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Status")
+                    b.Property<string>("RequestDeails")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("UserID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
+                    b.HasIndex("UserID")
                         .IsUnique();
 
                     b.ToTable("Requests");
@@ -465,13 +404,6 @@ namespace Api.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = "admin-id-001",
-                            RoleId = "1"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -542,12 +474,12 @@ namespace Api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Api.Entities.SellerRequest", b =>
+            modelBuilder.Entity("Api.Entities.Request", b =>
                 {
                     b.HasOne("Api.Entities.AppUser", "User")
                         .WithOne("Requests")
-                        .HasForeignKey("Api.Entities.SellerRequest", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("Api.Entities.Request", "UserID")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("User");
