@@ -2,6 +2,7 @@
 using Api.Entities;
 using Api.Services.NftService;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,7 +22,7 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(200,Type=typeof(IEnumerable<Nft>))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<NftDto>))]
         public IActionResult GetNfts()
         {
             var Nfts=_mapper.Map<List<NftDto>>(_nftrepository.GetNfts());
@@ -55,41 +56,46 @@ namespace Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Seller")] 
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-
         public IActionResult CreateNft([FromBody] NftDto nfts)
         {
-            if(nfts==null)
+            if (nfts == null)
             {
                 return BadRequest();
             }
 
-            var nft= _nftrepository.GetNfts().Where(n=>n.Title.Trim().ToUpper()==nfts.Title.TrimEnd().ToUpper()).FirstOrDefault();
+            var nft = _nftrepository.GetNfts()
+                         .Where(n => n.Title.Trim().ToUpper() == nfts.Title.TrimEnd().ToUpper())
+                         .FirstOrDefault();
 
-            if(nft==null)
+            if (nft != null) 
             {
-                ModelState.AddModelError("", "Nft already Exsits");
-                return StatusCode(422,ModelState);
+                ModelState.AddModelError("", "Nft already Exists");
+                return StatusCode(422, ModelState);
             }
 
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var NftMap = _mapper.Map<Nft>(nfts);
+             
+            var nftMap = _mapper.Map<Nft>(nfts);
 
-            if (!_nftrepository.CreateNft(NftMap))
+            if (!_nftrepository.CreateNft(nftMap))
             {
-                ModelState.AddModelError("", "Something whent wrong when saving");
-                return StatusCode(500,ModelState);
+                ModelState.AddModelError("", "Something went wrong when saving");
+                return StatusCode(500, ModelState);
             }
 
-            return Ok("sucessdully Created");
+            return Ok("Successfully Created");
         }
 
+
         [HttpPut("{nftId}")]
+        [Authorize(Roles = "Seller")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
@@ -100,14 +106,23 @@ namespace Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (nftId != updatedNft.Id)
-            {
-                return BadRequest(ModelState);
-            }
-
             if (!_nftrepository.NftExist(nftId))
             {
                 return NotFound();
+            }
+
+            var nft = _nftrepository.GetNftById(nftId);
+
+            if (nft == null)
+            {
+                return NotFound();
+            }
+
+            var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (nft.UserId != currentUserId)
+            {
+                return Forbid("You do not have permission to update this NFT.");
             }
 
             if (!ModelState.IsValid)
@@ -116,6 +131,7 @@ namespace Api.Controllers
             }
 
             var NftMap = _mapper.Map<Nft>(updatedNft);
+            NftMap.Id = nftId;
 
             if (!_nftrepository.UpdateNft(NftMap))
             {
@@ -128,6 +144,7 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{NftId}")]
+        [Authorize(Roles = "Seller")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
@@ -135,7 +152,7 @@ namespace Api.Controllers
         {
             if(!_nftrepository.NftExist(NftId))
             {
-                return NotFound();
+                return NotFound("NFT not found.");
             }
 
             var nftToDelete=_nftrepository.GetNftById(NftId);
@@ -150,8 +167,7 @@ namespace Api.Controllers
                 ModelState.AddModelError("", "Somhting wromg in delerting nft");
             }
 
-            return NoContent();
-
+            return Ok("NFT successfully deleted.");
         }
 
 
