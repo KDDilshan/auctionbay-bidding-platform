@@ -24,10 +24,12 @@ namespace Api.Mapping
                         ? src.Bids.OrderByDescending(b => b.BidPrice).First().AppUsers.FirstName 
                          : null));
 
-            CreateMap<Nft,NftDto>();
+            CreateMap<Nft, NftDto>();
+            CreateMap<NftDto, Nft>();
 
 
-            
+
+
         }   
     }
 }
