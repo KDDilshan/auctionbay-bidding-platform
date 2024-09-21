@@ -13,6 +13,8 @@ using Microsoft.Extensions.FileProviders;
 using Api.Services.JwtService;
 using Api.Services.UserService;
 using Stripe;
+using Api.Services.NftService;
+using Newtonsoft.Json;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,6 +38,17 @@ builder.Services.AddAuthentication(opt => {
     opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     opt.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(opt => {
+    opt.Events = new JwtBearerEvents
+    {
+        OnChallenge = context =>
+        {
+            context.HandleResponse();
+            context.Response.StatusCode = 403; 
+            context.Response.ContentType = "application/json";
+            var result = JsonConvert.SerializeObject(new { message = "You have no access" });
+            return context.Response.WriteAsync(result);
+        }
+    };
     opt.SaveToken = true;
     opt.RequireHttpsMetadata = false;
     opt.TokenValidationParameters = new TokenValidationParameters
@@ -85,7 +98,7 @@ builder.Services.AddSwaggerGen(c => {
 
 builder.Services.AddTransient<IJwtService, JwtService>();
 builder.Services.AddTransient<IUserService, UserService>();
-
+builder.Services.AddScoped<INftRepository, NftRepository>();
 
 builder.Services.AddSingleton<SmtpClient>();
 builder.Services.AddSingleton<IEmailService, EmailService>();

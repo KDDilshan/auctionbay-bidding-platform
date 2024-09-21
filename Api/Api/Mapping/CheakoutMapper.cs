@@ -22,10 +22,14 @@ namespace Api.Mapping
                 .ForMember(dest => dest.BuyerUsername, opt => opt.MapFrom(src =>
                     src.Bids.OrderByDescending(b => b.BidPrice).FirstOrDefault() != null
                         ? src.Bids.OrderByDescending(b => b.BidPrice).First().AppUsers.FirstName 
-                        : null));
+                         : null));
+
+            CreateMap<Nft, NftDto>();
+            CreateMap<NftDto, Nft>();
 
 
-            
+
+
         }   
     }
 }
