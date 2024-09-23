@@ -4,6 +4,7 @@ using MimeKit.Text;
 using MimeKit;
 using MailKit.Net.Smtp;
 using Api.Models;
+using Api.Models.Email;
 
 namespace Api.Services.EmailService
 {
@@ -31,6 +32,12 @@ namespace Api.Services.EmailService
             };
             Connect();
             _smtpClient.Send(email);
+        }
+
+        public void Send(EmailBuilder emailBuilder)
+        {
+            Email email = new EmailDirector(emailBuilder).Construct();
+            SendEmail(email);
         }
 
         private void Connect()
