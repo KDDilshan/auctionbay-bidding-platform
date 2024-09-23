@@ -15,6 +15,7 @@ using Api.Services.UserService;
 using Stripe;
 using Api.Services.NftService;
 using Newtonsoft.Json;
+using Api.Services.AuctionService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -98,7 +99,10 @@ builder.Services.AddSwaggerGen(c => {
 
 builder.Services.AddTransient<IJwtService, JwtService>();
 builder.Services.AddTransient<IUserService, UserService>();
+
 builder.Services.AddScoped<INftRepository, NftRepository>();
+builder.Services.AddScoped<IAuctionRepository, AuctionRepository>();
+builder.Services.AddScoped<AuctionService>();
 
 builder.Services.AddSingleton<SmtpClient>();
 builder.Services.AddSingleton<IEmailService, EmailService>();
