@@ -1,7 +1,7 @@
 ﻿using Api.Dtos;
 using Api.Entities;
 using Api.Mapping;
-using Api.Models;
+using Api.Models.Email;
 using Api.Services.EmailService;
 using Api.Services.JwtService;
 using Api.Services.UserService;
@@ -41,7 +41,7 @@ namespace Api.Controllers
 
             await _userManager.AddToRoleAsync(user, "Buyer");
 
-            _emailService.SendEmail(new Email.EmailBuilder().To(user.ToDto()).Register().Build());
+            _emailService.Send(new RegistrationEmail(user.ToDto()));
 
             return Ok("User created successfully");
         }
