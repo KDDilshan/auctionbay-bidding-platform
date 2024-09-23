@@ -1,4 +1,5 @@
-﻿using Api.Entities;
+﻿using Api.Dtos;
+using Api.Entities;
 
 namespace Api.Services.NftService
 {
@@ -8,7 +9,7 @@ namespace Api.Services.NftService
 
         Nft GetNftById(int id);
 
-        Task<Nft> GetBidsForNft(int nftId);
+        Task<NftBidsDto> GetNftBidsOnlyAsync(int nftId);
 
         bool NftExist(int id);
 

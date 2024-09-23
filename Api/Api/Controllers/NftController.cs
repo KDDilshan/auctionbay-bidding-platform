@@ -55,6 +55,20 @@ namespace Api.Controllers
             return Ok(nft);
         }
 
+
+        [HttpGet("{nftId}/bids")]
+        public async Task<IActionResult> GetNftBids(int nftId)
+        {
+            var nftBids = await _nftrepository.GetNftBidsOnlyAsync(nftId);
+
+            if (nftBids == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(nftBids);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Seller")] 
         [ProducesResponseType(200)]

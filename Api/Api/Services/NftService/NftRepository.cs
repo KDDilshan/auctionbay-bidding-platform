@@ -1,4 +1,5 @@
 ﻿using Api.Data;
+using Api.Dtos;
 using Api.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,13 +26,6 @@ namespace Api.Services.NftService
             return Save();
         }
 
-        public Task<Nft> GetBidsForNft(int nftId)
-        {
-            return _context.Nfts
-                .Include(n => n.Auctions)
-                .ThenInclude(a => a.Bids)
-                .FirstOrDefaultAsync(n=>n.Id == nftId);
-        }
 
         public Nft GetNftById(int id)
         {
@@ -60,5 +54,28 @@ namespace Api.Services.NftService
             _context.Update(nft);
             return Save();
         }
+
+
+        public async Task<NftBidsDto> GetNftBidsOnlyAsync(int nftId)
+        {
+            return await _context.Nfts
+                .Where(n => n.Id == nftId)
+                .Select(n => new NftBidsDto
+                {
+                    NftId = n.Id,
+                    NftTitle = n.Title,
+                    NftDescription = n.Description,
+                    Bids = n.Auctions.SelectMany(a => a.Bids).Select(b => new BidDto
+                    {
+                        BidId = b.Id,
+                        BidPrice = b.BidPrice,
+                        UserId = b.UserId,
+                        UserName = b.AppUsers.FirstName
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
+
+        }
+        
     }
 }
