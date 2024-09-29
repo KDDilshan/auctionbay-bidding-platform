@@ -100,7 +100,7 @@ namespace Api.Migrations
                         {
                             Id = "admin-id-001",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "09ef22ea-51ae-4c0c-b655-932af28d8def",
+                            ConcurrencyStamp = "02419240-6a89-4a8b-a434-54eb8e016d52",
                             Email = "admin@admin.com",
                             EmailConfirmed = true,
                             FirstName = "Admin",
@@ -108,10 +108,10 @@ namespace Api.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJzt2jNpaQncCSiNUJUNZFjV2ydDPdhJ0qg2v3XzbYluPuxoxe61vYvbDgQB4CM+uQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOwMRSAu6w7sn4mpGEKZFpKdJ8QlRtPRMciig5gMyLWKZ9cgihHimXYdumiT928oxA==",
                             PhoneNumberConfirmed = false,
                             ReqId = 0,
-                            SecurityStamp = "0542e095-cc35-41dd-9f0d-e220cd3b75e4",
+                            SecurityStamp = "fe3116c4-0fad-4380-bd6f-7c0adde098ee",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
