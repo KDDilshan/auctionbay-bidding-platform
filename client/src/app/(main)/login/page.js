@@ -7,7 +7,7 @@ import axios from "axios";
 import { apiLink, toastConfig } from "@/configs";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { UserContext } from "../providers";
+import { UserContext } from "../../providers";
 function page() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
