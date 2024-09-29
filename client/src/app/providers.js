@@ -1,6 +1,7 @@
 "use client";
 import { apiLink, getToken } from "@/configs";
 import { NextUIProvider } from "@nextui-org/react";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 import { createContext, useEffect, useState } from "react";
 

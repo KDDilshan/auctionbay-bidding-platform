@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useEffect } from "react";
+import React, { useContext} from "react";
 import { FiSearch } from "react-icons/fi";
 import {
   Navbar,
