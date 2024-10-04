@@ -1,4 +1,5 @@
-﻿using Api.Dtos;
+﻿using Api.Data;
+using Api.Dtos;
 using Api.Entities;
 using Api.Services.NftService;
 using AutoMapper;
@@ -14,11 +15,13 @@ namespace Api.Controllers
     {
         private readonly INftRepository _nftrepository;
         private readonly IMapper _mapper;
+        private readonly AppDbContext _context;
 
-        public NftController(INftRepository nftRepository,IMapper mapper)
+        public NftController(INftRepository nftRepository,IMapper mapper,AppDbContext appDbContext)
         {
             _nftrepository= nftRepository;
             _mapper = mapper;
+            _context = appDbContext;
         }
 
         [HttpGet]
