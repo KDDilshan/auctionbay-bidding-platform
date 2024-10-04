@@ -17,6 +17,8 @@ namespace Api.Entities
 
         public List<Bid> Bids { get; set; }
 
+        public List<PaymentRecord> PaymentRecords { get; set; }
+
       
     }
 }
