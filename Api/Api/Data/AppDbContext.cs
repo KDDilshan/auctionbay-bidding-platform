@@ -18,6 +18,8 @@ namespace Api.Data
         public DbSet<Bid> Bids { get; set; }
         public DbSet<SellerRequest> Requests { get; set; }
 
+        public DbSet<PaymentRecord> PaymentRecords { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
 
@@ -120,7 +122,7 @@ namespace Api.Data
             builder.Entity<IdentityUserRole<string>>().HasData(
                 new IdentityUserRole<string>
                 {
-                    UserId = "CreateMap<NftDto, Nft>();",  // ID of the Seller user
+                    UserId = "seller-id-001",  // ID of the Seller user
                     RoleId = "3"               // Assuming '2' is the Seller role ID
                 }
             );
