@@ -16,6 +16,8 @@ using Stripe;
 using Api.Services.NftService;
 using Newtonsoft.Json;
 using Api.Services.AuctionService;
+using Api.Services.PaymentService;
+using Api.Dtos;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -102,13 +104,15 @@ builder.Services.AddTransient<IUserService, UserService>();
 
 builder.Services.AddScoped<INftRepository, NftRepository>();
 builder.Services.AddScoped<IAuctionRepository, AuctionRepository>();
+
 builder.Services.AddScoped<AuctionService>();
 
 builder.Services.AddSingleton<SmtpClient>();
 builder.Services.AddSingleton<IEmailService, EmailService>();
 
-
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+builder.Services.AddSingleton<StripePaymentService>();
 
 builder.Services.AddTransient<IFileService, Api.Services.FileService.FileService>();
 builder.Services.AddCors(options =>
