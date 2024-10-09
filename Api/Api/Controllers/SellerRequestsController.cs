@@ -42,6 +42,29 @@ namespace Api.Controllers
             return Ok(result);
         }
 
+        [HttpGet("image/{id}")]
+        public async Task<ActionResult> GetImage(int id)
+        {
+            var sellerRequest = await _context.Requests.FindAsync(id);
+
+            if (sellerRequest == null)
+            {
+                return NotFound();
+            }
+
+            var imagePath = Path.Combine("uploads", sellerRequest.IdPhotoPath);
+
+            if (!System.IO.File.Exists(imagePath))
+            {
+                return NotFound("Image not found");
+            }
+
+            var imageBytes = System.IO.File.ReadAllBytes(imagePath);
+
+            var ext = Path.GetExtension(sellerRequest.IdPhotoPath);
+            return File(imageBytes, "image/"+ext); 
+        }
+
         // GET: api/SellerRequests/5
         [HttpGet("{id}")]
         public async Task<ActionResult<SellerRequest>> GetSellerRequest(int id)
