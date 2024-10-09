@@ -33,11 +33,13 @@ namespace Api.Controllers
         }
 
         // GET: api/SellerRequests
-        [Authorize(Roles = "Admin")]
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SellerRequest>>> GetRequests()
         {
-            return await _context.Requests.ToListAsync();
+            var list = await _context.Requests.Include(r=>r.User).ToListAsync();
+            var result = list.Select(request=> request.ToDto()).ToList();
+            return Ok(result);
         }
 
         // GET: api/SellerRequests/5
