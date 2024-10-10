@@ -42,7 +42,7 @@ namespace Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet("image/{id}")]
+        [HttpGet("{id}/image")]
         public async Task<ActionResult> GetImage(int id)
         {
             var sellerRequest = await _context.Requests.FindAsync(id);
@@ -93,7 +93,7 @@ namespace Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> ChangeStatus(int id,string status)
+        public async Task<ActionResult> ChangeStatus(int id,RequestStatusDto dto)
         {
             try
             {
@@ -104,12 +104,12 @@ namespace Api.Controllers
                     return NotFound();
                 }
 
-                if (status != "Approved" && status != "Rejected")
+                if (dto.Status != "Approved" && dto.Status != "Rejected")
                 {
                     return BadRequest("Invalid status");
                 }
 
-                sellerRequest.Status = status;
+                sellerRequest.Status = dto.Status;
                 await _context.SaveChangesAsync();
 
                 return Ok("status updated");
