@@ -65,20 +65,6 @@ namespace Api.Controllers
             return File(imageBytes, "image/"+ext); 
         }
 
-        // GET: api/SellerRequests/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<SellerRequest>> GetSellerRequest(int id)
-        {
-            var sellerRequest = await _context.Requests.FindAsync(id);
-
-            if (sellerRequest == null)
-            {
-                return NotFound();
-            }
-
-            return sellerRequest;
-        }
-
         [Authorize]
         [HttpGet("check")]
         public async Task<ActionResult<String>> CheckSellerRequest()
@@ -106,39 +92,34 @@ namespace Api.Controllers
             return Ok(new { Message=sellerRequest.Status });
         }
 
-        // PUT: api/SellerRequests/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSellerRequest(int id, SellerRequest sellerRequest)
+        public async Task<ActionResult> ChangeStatus(int id,string status)
         {
-            if (id != sellerRequest.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(sellerRequest).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SellerRequestExists(id))
+                var sellerRequest = await _context.Requests.FindAsync(id);
+
+                if (sellerRequest == null)
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return NoContent();
+                if (status != "Approved" && status != "Rejected")
+                {
+                    return BadRequest("Invalid status");
+                }
+
+                sellerRequest.Status = status;
+                await _context.SaveChangesAsync();
+
+                return Ok("status updated");
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
-        // POST: api/SellerRequests
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize]
         [HttpPost]
         public async Task<ActionResult<string>> PostSellerRequest(SellerRequestDto sellerRequestDto)
