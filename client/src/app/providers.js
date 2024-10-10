@@ -28,7 +28,7 @@ export function Providers({ children }) {
         )
         .catch((er) => console.log(er))
         .finally(() => setLoading(false));
-    }
+    } else setLoading(false);
   }, []);
 
   return (
