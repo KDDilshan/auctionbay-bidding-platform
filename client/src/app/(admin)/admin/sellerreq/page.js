@@ -1,6 +1,6 @@
 "use client";
 import { IoMdEye } from "react-icons/io";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableHeader,
@@ -18,33 +18,10 @@ import {
   ModalBody,
   ModalFooter,
 } from "@nextui-org/react";
-
-const rows = [
-  {
-    key: "1",
-    name: "Tony Reichert",
-    date: "CEO",
-    status: "Active",
-  },
-  {
-    key: "2",
-    name: "Zoey Lang",
-    date: "Technical Lead",
-    status: "Paused",
-  },
-  {
-    key: "3",
-    name: "Jane Fisher",
-    date: "Senior Developer",
-    status: "Active",
-  },
-  {
-    key: "4",
-    name: "William Howard",
-    date: "Community Manager",
-    status: "Vacation",
-  },
-];
+import axios from "axios";
+import { apiLink, getToken, toastConfig } from "@/configs";
+import Image from "next/image";
+import { toast } from "react-toastify";
 
 const columns = [
   {
@@ -67,7 +44,13 @@ const columns = [
 
 function Page() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const renderCell = React.useCallback((item,columnKey)=>{
+  const [rows, setRows] = React.useState([]);
+  const [image, setImage] = React.useState(null);
+  const [selectedItem, setSelectedItem] = React.useState(null);
+  const [rejectLoading, setRejectLoading] = useState(false);
+  const [acceptLoading, setAcceptLoading] = useState(false);
+
+  const renderCell = React.useCallback((item, columnKey) => {
     const cellValue = item[columnKey];
     switch (columnKey) {
       case "name":
@@ -77,10 +60,10 @@ function Page() {
               radius: "lg",
               src: "https://i.pravatar.cc/150?u=a042581f4e29026704d",
             }}
-            description={"nipunavishka123@gmail.com"}
+            description={item.email}
             name={cellValue}
           >
-            {"nipunavishka123@gmail.com"}
+            {item.email}
           </User>
         );
       case "action":
@@ -90,15 +73,67 @@ function Page() {
             color="warning"
             variant="faded"
             aria-label="Take a photo"
-            onClick={()=>onOpen()}
+            onClick={() => getImage(item)}
           >
             <IoMdEye />
           </Button>
         );
+      case "date":
+        return new Date(cellValue).toLocaleString();
       default:
         return cellValue;
     }
-  })
+  });
+
+  useEffect(() => {
+    axios
+      .get(apiLink + "/api/SellerRequests", {
+        headers: { Authorization: getToken() },
+      })
+      .then((res) => setRows(res.data))
+      .catch((er) => console.log(er));
+  }, []);
+
+  const getImage = async (item) => {
+    axios
+      .get(apiLink + "/api/SellerRequests/" + item.id + "/image", {
+        headers: { Authorization: getToken() },
+        responseType: "blob",
+      })
+      .then((res) => {
+        setSelectedItem(item);
+        setImage(URL.createObjectURL(res.data));
+        onOpen();
+      })
+      .catch((er) => console.log(er));
+  };
+
+  const updateStatus = async (status) => {
+    axios
+      .put(
+        apiLink + "/api/SellerRequests/" + selectedItem.id,
+        { status },
+        {
+          headers: {
+            Authorization: getToken(),
+          },
+        }
+      )
+      .then((res) => {
+        setRows(
+          rows.map((r) => (r.id === selectedItem.id ? { ...r, status } : r))
+        );
+        if (status === "Approved")
+          toast.success("Request Accepted successfully", toastConfig);
+        else toast.error("Request Rejected successfully", toastConfig);
+        onClose();
+      })
+      .catch((er) => console.log(er))
+      .finally(() => {
+        setAcceptLoading(false);
+        setRejectLoading(false);
+      });
+  };
   return (
     <>
       <Table aria-label="Example table with dynamic content">
@@ -122,32 +157,58 @@ function Page() {
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Modal Title
+                Seller Request
               </ModalHeader>
               <ModalBody>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                </p>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                </p>
-                <p>
-                  Magna exercitation reprehenderit magna aute tempor cupidatat
-                  consequat elit dolor adipisicing. Mollit dolor eiusmod sunt ex
-                  incididunt cillum quis. Velit duis sit officia eiusmod Lorem
-                  aliqua enim laboris do dolor eiusmod.
-                </p>
+                <div className="flex">
+                  <Image src={image} alt="image" width={250} height={200} />
+                  <div className="px-4 flex flex-col gap-2">
+                    <div>
+                      <div className=" text-zinc-500 text-sm">Name</div>
+                      <div className=" text-zinc-300">{selectedItem.name}</div>
+                    </div>
+                    <div>
+                      <div className=" text-zinc-500 text-sm">Email</div>
+                      <div className=" text-zinc-300">{selectedItem.email}</div>
+                    </div>
+                    <div>
+                      <div className=" text-zinc-500 text-sm">
+                        Date of birth
+                      </div>
+                      <div className=" text-zinc-300">
+                        {new Date(selectedItem.dob).toDateString()}
+                      </div>
+                    </div>
+                    <div>
+                      <div className=" text-zinc-500 text-sm">Address</div>
+                      <div className=" text-zinc-300">
+                        {selectedItem.address}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
+                <Button
+                  color="danger"
+                  variant="light"
+                  onPress={() => {
+                    updateStatus("Rejected");
+                    setRejectLoading(true);
+                  }}
+                  isLoading={rejectLoading}
+                >
+                  Reject
                 </Button>
-                <Button color="primary" onPress={onClose}>
-                  Action
+                <Button
+                  color="primary"
+                  onPress={() => {
+                    updateStatus("Approved");
+                    setAcceptLoading(true);
+                  }}
+                  isLoading={acceptLoading}
+                >
+                  Accept
                 </Button>
               </ModalFooter>
             </>
