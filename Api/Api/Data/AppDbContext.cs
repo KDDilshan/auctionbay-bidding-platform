@@ -18,6 +18,8 @@ namespace Api.Data
         public DbSet<Bid> Bids { get; set; }
         public DbSet<SellerRequest> Requests { get; set; }
 
+        public DbSet<PaymentRecord> PaymentRecords { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
 
@@ -97,31 +99,6 @@ namespace Api.Data
                 {
                     UserId = "admin-id-001",
                     RoleId = "1" 
-                }
-            );
-
-            var sellerUser = new AppUser
-            {
-                Id = "seller-id-001",
-                FirstName = "Seller",
-                LastName = "Seller",
-                UserName = "seller",
-                NormalizedUserName = "SELLER",
-                Email = "seller@seller.com",
-                NormalizedEmail = "SELLER@SELLER.COM",
-                EmailConfirmed = true
-            };
-            sellerUser.PasswordHash = hasher.HashPassword(sellerUser, "Seller@123");
-
-            // Seed seller user
-            builder.Entity<AppUser>().HasData(sellerUser);
-
-            // Assign seller role to default seller user
-            builder.Entity<IdentityUserRole<string>>().HasData(
-                new IdentityUserRole<string>
-                {
-                    UserId = "CreateMap<NftDto, Nft>();",  // ID of the Seller user
-                    RoleId = "3"               // Assuming '2' is the Seller role ID
                 }
             );
         }

@@ -33,16 +33,17 @@ namespace Api.Controllers
         }
 
         // GET: api/SellerRequests
-        [Authorize(Roles = "Admin")]
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SellerRequest>>> GetRequests()
         {
-            return await _context.Requests.ToListAsync();
+            var list = await _context.Requests.Include(r=>r.User).ToListAsync();
+            var result = list.Select(request=> request.ToDto()).ToList();
+            return Ok(result);
         }
 
-        // GET: api/SellerRequests/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<SellerRequest>> GetSellerRequest(int id)
+        [HttpGet("{id}/image")]
+        public async Task<ActionResult> GetImage(int id)
         {
             var sellerRequest = await _context.Requests.FindAsync(id);
 
@@ -51,7 +52,17 @@ namespace Api.Controllers
                 return NotFound();
             }
 
-            return sellerRequest;
+            var imagePath = Path.Combine("uploads", sellerRequest.IdPhotoPath);
+
+            if (!System.IO.File.Exists(imagePath))
+            {
+                return NotFound("Image not found");
+            }
+
+            var imageBytes = System.IO.File.ReadAllBytes(imagePath);
+
+            var ext = Path.GetExtension(sellerRequest.IdPhotoPath);
+            return File(imageBytes, "image/"+ext); 
         }
 
         [Authorize]
@@ -81,39 +92,34 @@ namespace Api.Controllers
             return Ok(new { Message=sellerRequest.Status });
         }
 
-        // PUT: api/SellerRequests/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSellerRequest(int id, SellerRequest sellerRequest)
+        public async Task<ActionResult> ChangeStatus(int id,RequestStatusDto dto)
         {
-            if (id != sellerRequest.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(sellerRequest).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SellerRequestExists(id))
+                var sellerRequest = await _context.Requests.FindAsync(id);
+
+                if (sellerRequest == null)
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return NoContent();
+                if (dto.Status != "Approved" && dto.Status != "Rejected")
+                {
+                    return BadRequest("Invalid status");
+                }
+
+                sellerRequest.Status = dto.Status;
+                await _context.SaveChangesAsync();
+
+                return Ok("status updated");
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
-        // POST: api/SellerRequests
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize]
         [HttpPost]
         public async Task<ActionResult<string>> PostSellerRequest(SellerRequestDto sellerRequestDto)
