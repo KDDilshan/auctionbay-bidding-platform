@@ -15,5 +15,19 @@ namespace Api.Mapping
                 DateOfBirth = dto.DateOfBirth
             };
         }
+
+        public static SellerRequestResponse ToDto(this SellerRequest req)
+        {
+            return new SellerRequestResponse
+            {
+                Id = req.Id,
+                Name = req.User.FirstName +" "+ req.User.LastName,
+                Email = req.User.Email,
+                Date = req.RequestDate,
+                Address = req.Address,
+                Dob = req.DateOfBirth,
+                Status = req.Status,
+            };
+        }
     }
 }

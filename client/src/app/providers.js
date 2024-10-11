@@ -1,6 +1,7 @@
 "use client";
 import { apiLink, getToken } from "@/configs";
-import { NextUIProvider } from "@nextui-org/react";
+import { NextUIProvider, Spinner } from "@nextui-org/react";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 import { createContext, useEffect, useState } from "react";
 
@@ -8,6 +9,7 @@ export const UserContext = createContext({});
 
 export function Providers({ children }) {
   const [userInfo, setUserInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -24,14 +26,22 @@ export function Providers({ children }) {
             lastName: res.data.lastName,
           })
         )
-        .catch((er) => console.log(er));
-    }
+        .catch((er) => console.log(er))
+        .finally(() => setLoading(false));
+    } else setLoading(false);
   }, []);
 
   return (
     <NextUIProvider navigate={router.push}>
       <UserContext.Provider value={{ userInfo, setUserInfo }}>
-        {children}
+        {loading ? (
+          <div className="w-full h-screen flex justify-center items-center">
+            {" "}
+            <Spinner size="md" label="Loading..." />
+          </div>
+        ) : (
+          children
+        )}
       </UserContext.Provider>
     </NextUIProvider>
   );
