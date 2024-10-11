@@ -23,23 +23,20 @@ namespace Api.Services.JwtService
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var key = Encoding.ASCII
-            .GetBytes(_configuration.GetSection("JWTSetting").GetSection("securityKey").Value!);
+                .GetBytes(_configuration.GetSection("JWTSetting:securityKey").Value!); // Use ':' for nested sections
 
             var roles = _userManager.GetRolesAsync(user).Result;
 
-            List<Claim> claims =
-            [
-                new (JwtRegisteredClaimNames.Email,user.Email??""),
-                new (JwtRegisteredClaimNames.Name,user.FirstName??""),
-                new (JwtRegisteredClaimNames.NameId,user.Id ??""),
-                new (JwtRegisteredClaimNames.Aud,
-                _configuration.GetSection("JWTSetting").GetSection("validAudience").Value!),
-                new (JwtRegisteredClaimNames.Iss,_configuration.GetSection("JWTSetting").GetSection("validIssuer").Value!)
-            ];
-
+            var claims = new List<Claim>
+    {
+        new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
+        new Claim(JwtRegisteredClaimNames.Name, user.FirstName ?? ""),
+        new Claim(JwtRegisteredClaimNames.NameId, user.Id ?? ""),
+        new Claim(JwtRegisteredClaimNames.Aud, _configuration.GetSection("JWTSetting:validAudience").Value!),
+        new Claim(JwtRegisteredClaimNames.Iss, _configuration.GetSection("JWTSetting:validIssuer").Value!)
+    };
 
             foreach (var role in roles)
-
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
@@ -50,12 +47,13 @@ namespace Api.Services.JwtService
                 Expires = DateTime.UtcNow.AddDays(1),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256
+                    SecurityAlgorithms.HmacSha256Signature
                 )
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+
     }
 }

@@ -40,20 +40,41 @@ builder.Services.AddAuthentication(opt => {
     opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     opt.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(opt => {
+})
+.AddJwtBearer(opt => {
     opt.Events = new JwtBearerEvents
     {
         OnChallenge = context =>
         {
+            // Avoid default behavior
             context.HandleResponse();
-            context.Response.StatusCode = 403; 
+
+            if (!context.Response.HasStarted)
+            {
+                // If the user is not authenticated, return a 401
+                context.Response.StatusCode = 401; // Unauthorized
+                context.Response.ContentType = "application/json";
+                var result = JsonConvert.SerializeObject(new { message = "You are not authenticated" });
+                return context.Response.WriteAsync(result);
+            }
+
+            return Task.CompletedTask;
+        },
+
+        OnForbidden = context =>
+        {
+            // Handle 403 Forbidden cases for roles
+            context.Response.StatusCode = 403; // Forbidden
             context.Response.ContentType = "application/json";
-            var result = JsonConvert.SerializeObject(new { message = "You have no access" });
+
+            var result = JsonConvert.SerializeObject(new { message = "You do not have permission to access this resource" });
             return context.Response.WriteAsync(result);
         }
     };
+
     opt.SaveToken = true;
     opt.RequireHttpsMetadata = false;
+
     opt.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
@@ -65,6 +86,7 @@ builder.Services.AddAuthentication(opt => {
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWTSetting.GetSection("securityKey").Value!))
     };
 });
+
 
 
 
@@ -160,4 +182,52 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+
+    await SeedRolesAsync(roleManager);
+    await SeedDefaultAdminAsync(userManager, roleManager);
+}
+
 app.Run();
+
+async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
+{
+    var roles = new[] { "Admin", "Seller", "User" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}
+
+async Task SeedDefaultAdminAsync(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
+{
+    var defaultAdminEmail = "admin@yourapp.com";
+    var defaultAdminPassword = "Admin123!"; 
+
+    var adminUser = await userManager.FindByEmailAsync(defaultAdminEmail);
+
+    if (adminUser == null)
+    {
+        var newAdmin = new AppUser
+        {
+            UserName = defaultAdminEmail,
+            Email = defaultAdminEmail,
+            EmailConfirmed = true
+        };
+
+        var createAdminResult = await userManager.CreateAsync(newAdmin, defaultAdminPassword);
+
+        if (createAdminResult.Succeeded)
+        {
+            // Assign Admin role
+            await userManager.AddToRoleAsync(newAdmin, "Admin");
+        }
+    }
+}
