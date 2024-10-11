@@ -1,6 +1,4 @@
 "use client";
-
-import BitPage from "@/components/BitPage";
 import Categories from "@/components/Categories";
 import Creators from "@/components/Creators";
 import Hero from "@/components/Hero";
@@ -13,7 +11,6 @@ export default function Home() {
       <Hero/>
       <Categories/>
       <Creators />
-      <BitPage/>
       <ShowCase />
       <ShowCase />
     </main>
