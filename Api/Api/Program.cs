@@ -93,33 +93,36 @@ builder.Services.AddAuthentication(opt => {
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c => {
+builder.Services.AddSwaggerGen(c =>
+{
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = @"JWT Authorization Example : 'Bearer eyeleieieekeieieie",
+        Description = @"JWT Authorization Example: 'Bearer {your_token}'",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer"
     });
 
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement(){
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
         {
-            new OpenApiSecurityScheme{
+            new OpenApiSecurityScheme
+            {
                 Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
                 },
-                Scheme = "outh2",
-                Name="Bearer",
+                Scheme = "Bearer",  // Corrected from 'outh2' to 'Bearer'
+                Name = "Bearer",
                 In = ParameterLocation.Header,
             },
             new List<string>()
         }
     });
-
 });
+
 
 builder.Services.AddTransient<IJwtService, JwtService>();
 builder.Services.AddTransient<IUserService, UserService>();
