@@ -71,6 +71,7 @@ function page() {
               className="account-input"
               variant={"bordered"}
               isRequired
+              showMonthAndYearPickers
               validationBehavior="native"
               maxValue={today(getLocalTimeZone()).subtract({ days: 265 * 18 })}
               value={date}

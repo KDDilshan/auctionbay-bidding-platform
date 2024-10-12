@@ -39,7 +39,7 @@ namespace Api.Controllers
 
             if (!result.Succeeded)return BadRequest(result.Errors);
 
-            await _userManager.AddToRoleAsync(user, "Buyer");
+            await _userManager.AddToRoleAsync(user, "User");
 
             _emailService.Send(new RegistrationEmail(user.ToDto()));
 

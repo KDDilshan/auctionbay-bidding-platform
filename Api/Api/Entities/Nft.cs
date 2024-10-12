@@ -13,7 +13,7 @@ namespace Api.Entities
 
         public string Description { get; set; }
 
-        public long Price { get; set; }
+        public string Image { get; set; }
 
         public string UserId { get; set; }
 
