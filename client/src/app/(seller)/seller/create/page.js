@@ -2,36 +2,80 @@
 import {
   Button,
   useDisclosure,
-  DatePicker,
   Input,
   Select,
   SelectItem,
   Textarea,
+  DateRangePicker,
 } from "@nextui-org/react";
-import React from "react";
-import { now, getLocalTimeZone } from "@internationalized/date";
+import React, { useEffect, useState } from "react";
 import NftModal from "@/components/NftModal";
+import axios from "axios";
+import { apiLink, getToken, toastConfig } from "@/configs";
+import { parseAbsoluteToLocal } from "@internationalized/date";
+import { toast } from "react-toastify";
 
 function page() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const animals = [
-    { key: "cat", label: "Cat" },
-    { key: "dog", label: "Dog" },
-    { key: "elephant", label: "Elephant" },
-    { key: "lion", label: "Lion" },
-    { key: "tiger", label: "Tiger" },
-    { key: "giraffe", label: "Giraffe" },
-    { key: "dolphin", label: "Dolphin" },
-    { key: "penguin", label: "Penguin" },
-    { key: "zebra", label: "Zebra" },
-    { key: "shark", label: "Shark" },
-    { key: "whale", label: "Whale" },
-    { key: "otter", label: "Otter" },
-    { key: "crocodile", label: "Crocodile" },
-  ];
+  const [list, setList] = useState([]);
+  const [title, setTitle] = useState("");
+  const [startingPrice, setStartingPrice] = useState(0);
+  const [description, setDescription] = useState("");
+  const [nftId, setNftId] = useState(null);
+  let [date, setDate] = React.useState({
+    start: parseAbsoluteToLocal(new Date().toISOString()),
+    end: parseAbsoluteToLocal(new Date().toISOString()),
+  });
+
+  useEffect(() => {
+    axios
+      .get(
+        apiLink + "/api/Nft/user",
+
+        {
+          headers: {
+            Authorization: getToken(),
+          },
+        }
+      )
+      .then((res) => setList(res.data))
+      .catch((er) => console.log(er));
+  }, []);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    axios
+      .post(
+        apiLink + "/api/Auctions",
+        {
+          title,
+          description,
+          price: startingPrice,
+          nftId,
+          startDate: new Date(date.start.toDate()).toISOString(),
+          endDate: new Date(date.end.toDate()).toISOString(),
+        },
+        {
+          headers: {
+            Authorization: getToken(),
+          },
+        }
+      )
+      .then((res) => {
+        toast.success("Auction Created", toastConfig);
+      })
+      .catch((er) => {
+        toast.error("Failed Operation", toastConfig);
+        console.log(er);
+      });
+  };
+
   return (
     <>
-      <div className="bg-zinc-900 p-5 rounded-xl flex flex-col gap-2">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-zinc-900 p-5 rounded-xl flex flex-col gap-2"
+      >
         <div className="flex gap-2">
           <Input
             type="text"
@@ -40,26 +84,21 @@ function page() {
             label="Title"
             isRequired
             validationBehavior="native"
+            value={title}
+            validate={(val) => parseFloat(val) > 0}
+            onChange={(e) => setTitle(e.target.value)}
           />
-          <DatePicker
-            label="Start Date"
-            className="w-1/4"
-            variant={"bordered"}
-            isRequired
+          <DateRangePicker
+            className="w-1/2"
             hideTimeZone
-            showMonthAndYearPickers
-            validationBehavior="native"
-            defaultValue={now(getLocalTimeZone())}
-          />
-          <DatePicker
-            label="End Date"
-            className="w-1/4"
+            granularity="second"
+            label="Start and End Date"
             variant={"bordered"}
-            isRequired
-            hideTimeZone
-            showMonthAndYearPickers
-            validationBehavior="native"
-            defaultValue={now(getLocalTimeZone())}
+            value={date}
+            onChange={(date) => {
+              setDate(date);
+              console.log(date.start.toDate(), date.end.toDate());
+            }}
           />
         </div>
         <div className="flex gap-2 ">
@@ -70,17 +109,21 @@ function page() {
             label="Starting Price"
             isRequired
             validationBehavior="native"
+            value={startingPrice}
+            onChange={(e) => setStartingPrice(e.target.value)}
           />
-          <div className="w-1/2 flex gap-2 items-center">
+          <div className="w-1/2 flex gap-2">
             <Select
               label="Select Nft"
               className="w-3/4"
               variant={"bordered"}
               isRequired
               validationBehavior="native"
+              value={nftId}
+              onChange={(e) => setNftId(e.target.value)}
             >
-              {animals.map((animal) => (
-                <SelectItem key={animal.key}>{animal.label}</SelectItem>
+              {list.map((item) => (
+                <SelectItem key={item.id}>{item.title}</SelectItem>
               ))}
             </Select>
             <Button
@@ -100,12 +143,20 @@ function page() {
           variant={"bordered"}
           isRequired
           validationBehavior="native"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
         />
-        <Button size="lg" color="success" variant="faded">
+        <Button type="submit" size="lg" color="success" variant="faded">
           Create Auction
         </Button>
-      </div>
-      <NftModal isOpen={isOpen} onClose={onClose} />
+      </form>
+      <NftModal
+        isOpen={isOpen}
+        onClose={onClose}
+        list={list}
+        setList={setList}
+        setNftId={setNftId}
+      />
     </>
   );
 }

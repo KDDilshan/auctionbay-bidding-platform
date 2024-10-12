@@ -15,7 +15,7 @@ import { apiLink, getToken, toastConfig } from "@/configs";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-function NftModal({ isOpen, onClose }) {
+function NftModal({ isOpen, onClose, list, setList, setNftId }) {
   const [image, setImage] = useState(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -36,6 +36,9 @@ function NftModal({ isOpen, onClose }) {
       })
       .then((res) => {
         toast.success("Success", toastConfig);
+        setList([...list, res.data]);
+        setNftId(res.data.id);
+        onClose();
       })
       .catch((er) => toast.error("Failed", toastConfig))
       .finally(() => setIsLoading(false));
