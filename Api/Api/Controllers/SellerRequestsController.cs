@@ -14,6 +14,7 @@ using Api.Mapping;
 using Api.Models;
 using Api.Services.FileService;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
+using Microsoft.AspNetCore.Identity;
 
 namespace Api.Controllers
 {
@@ -24,12 +25,14 @@ namespace Api.Controllers
         private readonly AppDbContext _context;
         private readonly IUserService _userService;
         private readonly IFileService _fileService;
+        private readonly UserManager<AppUser> _userManager;
 
-        public SellerRequestsController(AppDbContext context,IUserService userService,IFileService fileService)
+        public SellerRequestsController(AppDbContext context,IUserService userService,IFileService fileService, UserManager<AppUser> userManager)
         {
             _context = context;
             _userService = userService;
             _fileService = fileService;
+            _userManager = userManager;
         }
 
         // GET: api/SellerRequests
@@ -92,21 +95,38 @@ namespace Api.Controllers
             return Ok(new { Message=sellerRequest.Status });
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult> ChangeStatus(int id,RequestStatusDto dto)
         {
             try
             {
                 var sellerRequest = await _context.Requests.FindAsync(id);
+                var user = await _userService.getCurrentUser();
 
                 if (sellerRequest == null)
                 {
                     return NotFound();
                 }
 
+                if (user.Id != sellerRequest.UserId)
+                {
+                    return Unauthorized();
+                }
+
                 if (dto.Status != "Approved" && dto.Status != "Rejected")
                 {
                     return BadRequest("Invalid status");
+                }
+
+                if(dto.Status == "Approved")
+                {
+                    await _userManager.AddToRoleAsync(user, "Seller");
+                }
+
+                if(dto.Status == "Rejected")
+                {
+                    await _userManager.RemoveFromRoleAsync(user, "Seller");
                 }
 
                 sellerRequest.Status = dto.Status;

@@ -73,7 +73,7 @@ export default function DashboardHeader({ links }) {
               onClick={() => router.push("/account")}
             >
               <p className="font-semibold">Signed in as</p>
-              <p className="font-semibold">{userInfo.email}</p>
+              <p className="font-semibold">{userInfo?.email}</p>
             </DropdownItem>
             <DropdownItem key="settings">My Settings</DropdownItem>
             <DropdownItem key="configurations">Seller Dashboard</DropdownItem>

@@ -68,39 +68,6 @@ namespace Api.Data
 
 
             base.OnModelCreating(builder);
-
-            // Seed roles
-            builder.Entity<IdentityRole>().HasData(
-                new IdentityRole { Id = "1", Name = "Admin", NormalizedName = "ADMIN" },
-                new IdentityRole { Id = "2", Name = "Buyer", NormalizedName = "BUYER" },
-                new IdentityRole { Id = "3", Name = "Seller", NormalizedName = "SELLER" }
-            );
-
-            //defualt admin data
-            var hasher = new PasswordHasher<AppUser>();
-            var adminUser = new AppUser
-            {
-                Id = "admin-id-001",
-                FirstName = "Admin",
-                LastName = "Admin",
-                UserName = "admin",
-                NormalizedUserName = "ADMIN",
-                Email = "admin@admin.com",
-                NormalizedEmail = "ADMIN@ADMIN.COM",
-                EmailConfirmed = true
-            };
-            adminUser.PasswordHash = hasher.HashPassword(adminUser, "12345@Ad");
-
-            builder.Entity<AppUser>().HasData(adminUser);
-
-            // Assign admin role to default admin user
-            builder.Entity<IdentityUserRole<string>>().HasData(
-                new IdentityUserRole<string>
-                {
-                    UserId = "admin-id-001",
-                    RoleId = "1" 
-                }
-            );
         }
     }
 }

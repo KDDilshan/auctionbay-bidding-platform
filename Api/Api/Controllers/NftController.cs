@@ -1,11 +1,15 @@
 ﻿using Api.Data;
 using Api.Dtos;
 using Api.Entities;
+using Api.Mapping;
+using Api.Models;
+using Api.Services.FileService;
 using Api.Services.NftService;
+using Api.Services.UserService;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers
 {
@@ -16,12 +20,15 @@ namespace Api.Controllers
         private readonly INftRepository _nftrepository;
         private readonly IMapper _mapper;
         private readonly AppDbContext _context;
-
-        public NftController(INftRepository nftRepository,IMapper mapper,AppDbContext appDbContext)
+        private readonly IUserService _userService;
+        private readonly IFileService _fileService;
+        public NftController(INftRepository nftRepository,IMapper mapper,AppDbContext appDbContext, IUserService userService, IFileService fileService)
         {
             _nftrepository= nftRepository;
             _mapper = mapper;
             _context = appDbContext;
+            _userService = userService;
+            _fileService = fileService;
         }
 
         [HttpGet]
@@ -36,6 +43,22 @@ namespace Api.Controllers
             }
 
             return Ok(Nfts);
+        }
+
+        [HttpGet("user")]
+        [Authorize(Roles = "Seller")]
+        public async Task<ActionResult<List<Nft>>>GetMyNfts() 
+        {
+            try
+            {
+                string userId = _userService.GetCurrentUserId();
+                var nfts = await _context.Nfts.Where(nft => nft.UserId == userId).ToListAsync();
+                return Ok(nfts);
+            }
+            catch (Exception er)
+            {
+                return BadRequest(er.Message);
+            }
         }
 
         [HttpGet("{nftId}")]
@@ -73,41 +96,47 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Seller")] 
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        public IActionResult CreateNft([FromBody] NftDto nfts)
+        [Authorize(Roles = "Seller")]
+        public async Task<ActionResult> CreateNft(NftDto nfts)
         {
-            if (nfts == null)
+            try
             {
-                return BadRequest();
-            }
+                if (nfts == null)
+                {
+                    return BadRequest();
+                }
 
-            var nft = _nftrepository.GetNfts()
-                         .Where(n => n.Title.Trim().ToUpper() == nfts.Title.TrimEnd().ToUpper())
-                         .FirstOrDefault();
+                var isnft = _nftrepository.GetNfts()
+                             .Where(n => n.Title.Trim().ToUpper() == nfts.Title.TrimEnd().ToUpper())
+                             .FirstOrDefault();
 
-            if (nft != null) 
+                if (isnft != null)
+                {
+                    ModelState.AddModelError("", "Nft already Exists");
+                    return StatusCode(422, ModelState);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                string userID = _userService.GetCurrentUserId();
+                var PhotoPath = await _fileService.SaveFileAsync(new UploadedFile.FileBuilder().File(nfts.Image).AllowImg().Build());
+
+                Nft nft = nfts.ToEntity(userID, PhotoPath);
+
+                if (!_nftrepository.CreateNft(nft))
+                {
+                    ModelState.AddModelError("", "Something went wrong when saving");
+                    return StatusCode(500, ModelState);
+                }
+
+                return Ok(nft);
+            }catch(Exception e)
             {
-                ModelState.AddModelError("", "Nft already Exists");
-                return StatusCode(422, ModelState);
+                return BadRequest(e.Message);
             }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-             
-            var nftMap = _mapper.Map<Nft>(nfts);
-
-            if (!_nftrepository.CreateNft(nftMap))
-            {
-                ModelState.AddModelError("", "Something went wrong when saving");
-                return StatusCode(500, ModelState);
-            }
-
-            return Ok("Successfully Created");
         }
 
 
