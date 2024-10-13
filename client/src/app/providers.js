@@ -1,4 +1,5 @@
 "use client";
+import Loading from "@/components/Loading";
 import { apiLink, getToken } from "@/configs";
 import { NextUIProvider, Spinner } from "@nextui-org/react";
 import axios from "axios";
@@ -34,14 +35,7 @@ export function Providers({ children }) {
   return (
     <NextUIProvider navigate={router.push}>
       <UserContext.Provider value={{ userInfo, setUserInfo }}>
-        {loading ? (
-          <div className="w-full h-screen flex justify-center items-center">
-            {" "}
-            <Spinner size="md" label="Loading..." />
-          </div>
-        ) : (
-          children
-        )}
+        {loading ? <Loading /> : children}
       </UserContext.Provider>
     </NextUIProvider>
   );
