@@ -18,6 +18,7 @@ using Newtonsoft.Json;
 using Api.Services.AuctionService;
 using Api.Services.PaymentService;
 using Api.Dtos;
+using Api.Services.BidService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -124,8 +125,9 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
-builder.Services.AddTransient<IJwtService, JwtService>();
-builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IBidService, BidService>();
 
 builder.Services.AddScoped<INftRepository, NftRepository>();
 builder.Services.AddScoped<IAuctionRepository, AuctionRepository>();
