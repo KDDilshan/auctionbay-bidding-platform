@@ -41,7 +41,6 @@ namespace Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<AuctionResponse>> GetAuction(int id)
         {
-            var curruser = _userService.GetCurrentUserId();
             var auction = await _context.Auctions.FindAsync(id);
             var nft = await _context.Nfts.FindAsync(auction.NftId);
             var user = await _context.Users.FindAsync(auction.UserID);
@@ -61,7 +60,6 @@ namespace Api.Controllers
                 NumberOfBids = bidsCount,
                 Owner = user.FirstName + " " + user.LastName,
                 email = user.Email,
-                UserBid = curruser
             });
         }
 

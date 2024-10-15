@@ -20,6 +20,7 @@ namespace Api.Entities
         public DateTime EndDate { get; set; }
 
         public long Price { get; set; }
+        public string Status { get; set; } = "Open";
 
         public int NftId {  get; set; }
 

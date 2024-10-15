@@ -13,7 +13,7 @@ namespace Api.Mapping
                 Description = auction.Description,
                 StartDate = auction.StartDate,
                 EndDate = auction.EndDate,
-                Price = auction.Price,
+                Price = auction.Price*100,
                 NftId = auction.NftId,
                 UserID = UserId
             };
