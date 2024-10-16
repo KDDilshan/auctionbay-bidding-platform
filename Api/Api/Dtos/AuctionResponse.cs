@@ -19,5 +19,6 @@
         public string Category { get; set; }
         public string Owner { get; set; }
         public string email { get; set; }
+        public string Status { get; set; }
     }
 }
