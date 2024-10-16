@@ -16,26 +16,17 @@ namespace Api.Controllers
     [ApiController]
     public class AuctionsController : ControllerBase
     {
-        public readonly AuctionService _auctionService;
+        public readonly IAuctionService _auctionService;
         private readonly AppDbContext _context;
         private readonly IUserService _userService;
         private readonly IBidService _bidService;
 
-        public AuctionsController(AuctionService auctionService, AppDbContext context, IUserService userService, IBidService bidService)
+        public AuctionsController(IAuctionService auctionService, AppDbContext context, IUserService userService, IBidService bidService)
         {
             _auctionService = auctionService;
             _context = context;
             _userService = userService;
             _bidService = bidService;
-        }
-
-        [HttpGet]
-        [Authorize(Roles = "Seller")]
-        public async Task<IActionResult> GetAllAuctionDetils()
-        {
-            var auctions=await _auctionService.GetAuctionDetailsAsync();
-            return Ok(auctions);
-
         }
 
         [HttpGet("{id}")]
@@ -60,6 +51,7 @@ namespace Api.Controllers
                 NumberOfBids = bidsCount,
                 Owner = user.FirstName + " " + user.LastName,
                 email = user.Email,
+                Status = auction.Status,
             });
         }
 
@@ -95,14 +87,17 @@ namespace Api.Controllers
                 }
 
                 var nft = await _context.Nfts.FindAsync(auctionDto.NftId);
-                if (nft == null) return NotFound("Nft not found");
+                if (nft == null) return NotFound("NFT not found");
 
                 if (nft.UserId != user.Id) return Unauthorized("You are not the owner of this NFT");
+
+                var auctions = await _context.Auctions.Where(a => a.NftId == auctionDto.NftId).ToListAsync();
+                if (auctions.Count > 0) return BadRequest("This NFT is already in auction");
 
                 _context.Auctions.Add(auctionDto.ToEntity(user.Id));
                 await _context.SaveChangesAsync();
 
-                return Ok("ok");
+                return Ok("Auction Created.");
             }catch(Exception e)
             {
                 return BadRequest(e.Message);

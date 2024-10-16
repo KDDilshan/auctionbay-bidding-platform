@@ -42,6 +42,11 @@ function page({ params }) {
         },
       })
       .then((res) => {
+        setNft({
+          ...nft,
+          currentBid: bidValue * 100,
+          numberOfBids: nft.numberOfBids + 1,
+        });
         toast.success("Bid Placed", toastConfig);
       })
       .catch((er) => {
@@ -55,7 +60,7 @@ function page({ params }) {
   const renderer = ({ days, hours, minutes, seconds, completed }) => {
     if (completed) {
       // Render a completed state
-      return <div>SOLD</div>;
+      return <div>{nft.status == "Open" ? "Closed" : nft.status}</div>;
     } else {
       // Render a countdown
       return (
@@ -183,37 +188,39 @@ function page({ params }) {
           <hr className="mt-6 border-t-2 border-slate-500"></hr>
           {/* Bid Form */}
           <div className="p-6 -mt-2">
+            <p className="mb-1 text-lg text-left ">
+              Current Bid : $
+              {nft.currentBid / 100 + "." + (nft.currentBid % 100)}
+            </p>
             {userInfo ? (
-              <form onSubmit={placeBid} className="flex flex-col">
-                <p className="mb-1 text-lg text-left ">
-                  Current Bid : $
-                  {nft.currentBid / 100 + "." + (nft.currentBid % 100)}
-                </p>
-                {/* INput for bid value */}
-                <Input
-                  type="number"
-                  placeholder="0.00"
-                  labelPlacement="outside"
-                  isRequired
-                  validate={(val) => parseFloat(val) > nft.currentBid}
-                  className="mb-2"
-                  value={bidValue}
-                  onChange={(e) => setBidValue(e.target.value)}
-                  startContent={
-                    <div className="flex items-center pointer-events-none">
-                      <span className="text-default-400 text-small">$</span>
-                    </div>
-                  }
-                />
-                {/* Place Bid button */}
-                <Button
-                  isLoading={btnLoading}
-                  type="submit"
-                  className="w-full p-2 px-4 text-white bg-blue-700 rounded-xl hover:bg-blue-900"
-                >
-                  Place Bid
-                </Button>
-              </form>
+              nft.status == "Open" && (
+                <form onSubmit={placeBid} className="flex flex-col">
+                  {/* INput for bid value */}
+                  <Input
+                    type="number"
+                    placeholder="0.00"
+                    labelPlacement="outside"
+                    isRequired
+                    validate={(val) => parseFloat(val) > nft.currentBid}
+                    className="mb-2"
+                    value={bidValue}
+                    onChange={(e) => setBidValue(e.target.value)}
+                    startContent={
+                      <div className="flex items-center pointer-events-none">
+                        <span className="text-default-400 text-small">$</span>
+                      </div>
+                    }
+                  />
+                  {/* Place Bid button */}
+                  <Button
+                    isLoading={btnLoading}
+                    type="submit"
+                    className="w-full p-2 px-4 text-white bg-blue-700 rounded-xl hover:bg-blue-900"
+                  >
+                    Place Bid
+                  </Button>
+                </form>
+              )
             ) : (
               <div>Log into your account for place a bid</div>
             )}

@@ -19,6 +19,7 @@ using Api.Services.AuctionService;
 using Api.Services.PaymentService;
 using Api.Dtos;
 using Api.Services.BidService;
+using Api.Services.CloseNotifyService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -130,12 +131,11 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBidService, BidService>();
 
 builder.Services.AddScoped<INftRepository, NftRepository>();
-builder.Services.AddScoped<IAuctionRepository, AuctionRepository>();
+builder.Services.AddScoped<IAuctionService, AuctionService>();
 
-builder.Services.AddScoped<AuctionService>();
 
-builder.Services.AddSingleton<SmtpClient>();
-builder.Services.AddSingleton<IEmailService, EmailService>();
+builder.Services.AddTransient<SmtpClient>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
@@ -150,6 +150,9 @@ builder.Services.AddCors(options =>
             policy.WithOrigins("*").AllowAnyMethod().AllowAnyHeader(); ;
         });
 });
+
+// Auction auto close service
+builder.Services.AddHostedService<CloseNotifyService>();
 
 var app = builder.Build();
 

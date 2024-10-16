@@ -2,14 +2,22 @@
 
 namespace Api.Models.Email
 {
-    public class RegistrationEmail : EmailBuilder
+    public class AuctionWinnerEmail : EmailBuilder
     {
         private Email email;
-        private UserDto user;
+        private string auctionName;
+        private decimal winningBidAmount;
+        private string winnerName;
+        private string winnerEmail;
+        private string claimLink;
 
-        public RegistrationEmail(UserDto user)
+        public AuctionWinnerEmail(string auctionName, decimal winningBidAmount, string winnerName, string winnerEmail, string claimLink)
         {
-            this.user = user;
+            this.auctionName = auctionName;
+            this.winningBidAmount = winningBidAmount/100;
+            this.winnerName = winnerName;
+            this.winnerEmail = winnerEmail;
+            this.claimLink = claimLink;
             this.email = new Email();
         }
 
@@ -23,15 +31,18 @@ namespace Api.Models.Email
             email.body = $@"
                 <div style='font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;'>
                     <div style='max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);'>
-                        <h2 style='color: #333333; text-align: center;'>Welcome to NFTFY, {user.FirstName} {user.LastName}!</h2>
+                        <h2 style='color: #333333; text-align: center;'>Congratulations {winnerName}!</h2>
                         <p style='color: #555555; font-size: 16px; line-height: 1.6;'>
-                            Thank you for joining NFTFY – the premier NFT auction house. We're thrilled to have you in our community!
+                            We are excited to inform you that you have won the auction for <strong>{auctionName}</strong> with a winning bid of <strong>${winningBidAmount}</strong>!
                         </p>
                         <p style='color: #555555; font-size: 16px; line-height: 1.6;'>
-                            As a registered member, you can now explore, bid on, and create unique NFTs. Start discovering exclusive auctions, and showcase your own digital creations to the world.
+                            To claim your NFT, you must complete the payment process. Please follow the link below to claim your auction item:
                         </p>
+                        <div style='text-align: center; margin: 20px 0;'>
+                            <a href='{claimLink}' style='background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; font-size: 16px; border-radius: 5px;'>Claim Your NFT</a>
+                        </div>
                         <p style='color: #555555; font-size: 16px; line-height: 1.6;'>
-                            Stay tuned for upcoming auctions and updates from the NFTFY community. Should you need any assistance, our support team is here to help.
+                            Please note that if you do not complete the payment and claim process within the given time, you will forfeit your rights to this NFT.
                         </p>
                         <p style='color: #555555; font-size: 16px; line-height: 1.6;'>
                             Best Regards,<br>
@@ -52,12 +63,12 @@ namespace Api.Models.Email
 
         public void BuildSubject()
         {
-            email.subject = "Welcome to NFTFY – Your NFT Auction Journey Begins!";
+            email.subject = $"Congratulations {winnerName} – You Won the Auction for {auctionName}!";
         }
 
         public void BuildTo()
         {
-            email.to = user.Email;
+            email.to = winnerEmail;
         }
     }
 }

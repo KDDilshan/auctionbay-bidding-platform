@@ -2,14 +2,22 @@
 
 namespace Api.Models.Email
 {
-    public class RegistrationEmail : EmailBuilder
+    public class AuctionClosedEmail : EmailBuilder
     {
         private Email email;
-        private UserDto user;
+        private string auctionName;
+        private DateTime closedDateTime;
+        private decimal highestBidAmount;
+        private string highestBidderName;
+        private string auctionOwnerEmail;
 
-        public RegistrationEmail(UserDto user)
+        public AuctionClosedEmail(string auctionName, DateTime closedDateTime, decimal highestBidAmount, string highestBidderName, string auctionOwnerEmail)
         {
-            this.user = user;
+            this.auctionName = auctionName;
+            this.closedDateTime = closedDateTime.ToLocalTime();
+            this.highestBidAmount = highestBidAmount/100;
+            this.highestBidderName = highestBidderName;
+            this.auctionOwnerEmail = auctionOwnerEmail;
             this.email = new Email();
         }
 
@@ -23,19 +31,19 @@ namespace Api.Models.Email
             email.body = $@"
                 <div style='font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;'>
                     <div style='max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);'>
-                        <h2 style='color: #333333; text-align: center;'>Welcome to NFTFY, {user.FirstName} {user.LastName}!</h2>
+                        <h2 style='color: #333333; text-align: center;'>Auction Closed: {auctionName}</h2>
                         <p style='color: #555555; font-size: 16px; line-height: 1.6;'>
-                            Thank you for joining NFTFY – the premier NFT auction house. We're thrilled to have you in our community!
+                            Your auction <strong>{auctionName}</strong> has successfully closed on <strong>{closedDateTime:MMMM dd, yyyy hh:mm tt}</strong>.
                         </p>
                         <p style='color: #555555; font-size: 16px; line-height: 1.6;'>
-                            As a registered member, you can now explore, bid on, and create unique NFTs. Start discovering exclusive auctions, and showcase your own digital creations to the world.
+                            The highest bid received is <strong>${highestBidAmount}</strong>, placed by <strong>{highestBidderName}</strong>.
                         </p>
                         <p style='color: #555555; font-size: 16px; line-height: 1.6;'>
-                            Stay tuned for upcoming auctions and updates from the NFTFY community. Should you need any assistance, our support team is here to help.
+                            Congratulations on a successful auction! If you have any questions or need assistance, feel free to contact our support team.
                         </p>
                         <p style='color: #555555; font-size: 16px; line-height: 1.6;'>
                             Best Regards,<br>
-                            <span style='color: #333333; font-weight: bold;'>The NFTFY Team</span>
+                            <span style='color: #333333; font-weight: bold;'>NFTFY Team</span>
                         </p>
                     </div>
                     <div style='max-width: 600px; margin: 0 auto; text-align: center; padding: 10px; font-size: 12px; color: #999999;'>
@@ -52,12 +60,12 @@ namespace Api.Models.Email
 
         public void BuildSubject()
         {
-            email.subject = "Welcome to NFTFY – Your NFT Auction Journey Begins!";
+            email.subject = $"Auction Closed: {auctionName} – Highest Bid Details";
         }
 
         public void BuildTo()
         {
-            email.to = user.Email;
+            email.to = auctionOwnerEmail;
         }
     }
 }

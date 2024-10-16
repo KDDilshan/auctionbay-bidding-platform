@@ -104,7 +104,7 @@ function page() {
         <div className="flex gap-2 ">
           <Input
             type="number"
-            className="w-1/2"
+            className="w-1/3"
             variant={"bordered"}
             label="Starting Price"
             isRequired
@@ -112,7 +112,20 @@ function page() {
             value={startingPrice}
             onChange={(e) => setStartingPrice(e.target.value)}
           />
-          <div className="w-1/2 flex gap-2">
+          <Select
+            label="Select Nft"
+            className="w-1/3"
+            variant={"bordered"}
+            isRequired
+            validationBehavior="native"
+            value={nftId}
+            onChange={(e) => setNftId(e.target.value)}
+          >
+            {list.map((item) => (
+              <SelectItem key={item.id}>{item.title}</SelectItem>
+            ))}
+          </Select>
+          <div className="w-1/3 flex gap-2">
             <Select
               label="Select Nft"
               className="w-3/4"
@@ -133,7 +146,7 @@ function page() {
               color="primary"
               variant="faded"
             >
-              Add new NFT
+              Add NFT
             </Button>
           </div>
         </div>
