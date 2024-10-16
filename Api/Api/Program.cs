@@ -131,9 +131,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBidService, BidService>();
 
 builder.Services.AddScoped<INftRepository, NftRepository>();
-builder.Services.AddScoped<IAuctionRepository, AuctionRepository>();
+builder.Services.AddScoped<IAuctionService, AuctionService>();
 
-builder.Services.AddScoped<AuctionService>();
 
 builder.Services.AddTransient<SmtpClient>();
 builder.Services.AddScoped<IEmailService, EmailService>();

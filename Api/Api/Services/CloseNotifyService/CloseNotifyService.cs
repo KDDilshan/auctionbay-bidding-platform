@@ -33,22 +33,20 @@ namespace Api.Services.CloseNotifyService
                         await _context.SaveChangesAsync();
 
                         var owner = _context.Users.Find(auction.UserID);
-                        var email = new Email
-                        {
-                            to = owner.Email,
-                            subject = "Auction Closed",
-                            body = $"Your auction {auction.Title} has closed."
-                        };
                         
                         var highestBid = await _context.Bids.Where(b => b.AuctionID == auction.Id).OrderByDescending(b => b.BidPrice).FirstOrDefaultAsync();
 
                         if (highestBid != null)
                         {
                             var winner = await _context.Users.FindAsync(highestBid.UserId);
-                            email.body += $"The winner is {winner.Email} with a bid of {highestBid.BidPrice}.";
+                            _emailService.Send(new AuctionWinnerEmail(auction.Title,highestBid.BidPrice, winner.FirstName + " " + winner.LastName, winner.Email, "http://localhost:3000/"));
+                            _emailService.Send(new AuctionClosedEmail(auction.Title, auction.EndDate, highestBid.BidPrice, winner.FirstName + " " + winner.LastName, owner.Email));
+                        }
+                        else
+                        {
+                            _emailService.Send(new AuctionClosedNoBidsEmail(auction.Title, auction.EndDate, owner.FirstName + " " + owner.LastName, owner.Email));
                         }
 
-                        _emailService.SendEmail(email);
                     }
                 }
 
