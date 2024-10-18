@@ -102,16 +102,11 @@ namespace Api.Controllers
             try
             {
                 var sellerRequest = await _context.Requests.FindAsync(id);
-                var user = await _userService.getCurrentUser();
+                var user = await _userManager.FindByIdAsync(sellerRequest.UserId);
 
                 if (sellerRequest == null)
                 {
                     return NotFound();
-                }
-
-                if (user.Id != sellerRequest.UserId)
-                {
-                    return Unauthorized();
                 }
 
                 if (dto.Status != "Approved" && dto.Status != "Rejected")
