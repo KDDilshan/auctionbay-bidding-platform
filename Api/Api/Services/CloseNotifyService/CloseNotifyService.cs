@@ -29,8 +29,6 @@ namespace Api.Services.CloseNotifyService
                     foreach (var auction in auctions)
                     {
                         auction.Status = "Close";
-                        _context.Auctions.Update(auction);
-                        await _context.SaveChangesAsync();
 
                         var owner = _context.Users.Find(auction.UserID);
                         
@@ -39,6 +37,7 @@ namespace Api.Services.CloseNotifyService
                         if (highestBid != null)
                         {
                             var winner = await _context.Users.FindAsync(highestBid.UserId);
+                            auction.Winner = highestBid.UserId;
                             _emailService.Send(new AuctionWinnerEmail(auction.Title,highestBid.BidPrice, winner.FirstName + " " + winner.LastName, winner.Email, "http://localhost:3000/"));
                             _emailService.Send(new AuctionClosedEmail(auction.Title, auction.EndDate, highestBid.BidPrice, winner.FirstName + " " + winner.LastName, owner.Email));
                         }
@@ -46,6 +45,9 @@ namespace Api.Services.CloseNotifyService
                         {
                             _emailService.Send(new AuctionClosedNoBidsEmail(auction.Title, auction.EndDate, owner.FirstName + " " + owner.LastName, owner.Email));
                         }
+
+                        _context.Auctions.Update(auction);
+                        await _context.SaveChangesAsync();
 
                     }
                 }

@@ -33,6 +33,9 @@ namespace Api.Entities
         public string UserID { get; set; }
 
         public AppUser AppUser { get; set; }
+        public string? Winner { get; set; }
+
+        public AppUser? WinUser { get; set; }
 
     }
 }

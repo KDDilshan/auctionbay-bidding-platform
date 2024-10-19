@@ -35,7 +35,7 @@ namespace Api.Controllers
             var auction = await _context.Auctions.FindAsync(id);
             var nft = await _context.Nfts.FindAsync(auction.NftId);
             var user = await _context.Users.FindAsync(auction.UserID);
-            var highestBid = await _context.Bids.Where(b => b.AuctionID == id).OrderByDescending(b => b.BidPrice).FirstOrDefaultAsync();
+            var highestBid = await _bidService.GetHighest(auction.Id);
             var bidsCount = await _context.Bids.Where(b => b.AuctionID == id).CountAsync();
             //var userHighest = await _context.Bids.Where(b => b.AuctionID == id && b.UserId == curruser.Id).OrderByDescending(b => b.BidPrice).FirstOrDefaultAsync();
             return Ok(new AuctionResponse
@@ -102,6 +102,59 @@ namespace Api.Controllers
             {
                 return BadRequest(e.Message);
             }
+        }
+
+        //this is for testing, remove this later
+        [HttpGet]
+        public async Task<ActionResult<List<AuctionResponse>>> GetAuctions()
+        {
+            var auctions = await _context.Auctions.Where(a => a.Status == "Open").ToListAsync();
+            var response = new List<AuctionResponse>();
+
+            foreach (var auction in auctions)
+            {
+                var nft = await _context.Nfts.FindAsync(auction.NftId);
+                var user = await _context.Users.FindAsync(auction.UserID);
+                var highestBid = await _bidService.GetHighest(auction.Id);
+                var bidsCount = await _context.Bids.Where(b => b.AuctionID == auction.Id).CountAsync();
+                //var userHighest = await _context.Bids.Where(b => b.AuctionID == auction.Id && b.UserId == curruser.Id).OrderByDescending(b => b.BidPrice).FirstOrDefaultAsync();
+                response.Add(new AuctionResponse
+                {
+                    Title = auction.Title,
+                    Description = auction.Description,
+                    EndDate = auction.EndDate,
+                    Price = auction.Price,
+                    NftTitle = nft.Title,
+                    Image = nft.Image,
+                    Category = "Art",
+                    CurrentBid = highestBid?.BidPrice ?? auction.Price,
+                    NumberOfBids = bidsCount,
+                    Owner = user.FirstName + " " + user.LastName,
+                    email = user.Email,
+                    Status = auction.Status,
+                });
+            }
+
+            return Ok(response);
+        }
+
+        [HttpGet("claims")]
+        [Authorize]
+        public async Task<ActionResult<List<ClaimResponse>>> GetClaims()
+        {
+            var user = await _userService.getCurrentUser();
+            var auctions = await _context.Auctions.Include(a=>a.Nft).Where(a => a.Winner == user.Id && a.Status == "Close").ToListAsync();
+            var response = new List<ClaimResponse>();
+
+            foreach (var auction in auctions)
+            {
+                
+                var highestBid = await _bidService.GetHighest(auction.Id);
+               
+                response.Add(auction.ToClaim(highestBid.BidPrice));
+            }
+
+            return Ok(response);
         }
     }
 }

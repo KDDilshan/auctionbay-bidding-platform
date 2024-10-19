@@ -5,6 +5,9 @@ using Api.Services.PaymentService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Api.Services.UserService;
+using Api.Services.BidService;
 
 namespace Api.Controllers
 {
@@ -14,55 +17,78 @@ namespace Api.Controllers
     {
         private readonly StripePaymentService _paymentService;
         private readonly AppDbContext _context;
+        private readonly IUserService _userService;
+        private readonly IBidService _bidService;
 
-        public PaymentController(StripePaymentService stripePaymentService,AppDbContext appDbContext)
+        public PaymentController(StripePaymentService stripePaymentService,AppDbContext appDbContext, IUserService userService, IBidService bidService)
         {
             _paymentService = stripePaymentService;
             _context = appDbContext;
+            _userService = userService;
+            _bidService = bidService;
         }
 
-        [HttpPost("NFT-checkout")]
-        public ActionResult CreateCheckoutSession([FromBody] CheakoutDto cheakoutDto)
+        [Authorize]
+        [HttpPost("{id}")]
+        public async Task<ActionResult> CreateCheckoutSession(int id)
         {
-            if (cheakoutDto == null)
+            var userId = _userService.GetCurrentUserId();
+
+            var auction = await _context.Auctions.Include(a=>a.Nft).Include(a=>a.WinUser).FirstOrDefaultAsync(a=>a.Id==id);
+
+            if (auction == null)
             {
-                return BadRequest("Invalid checkout details provided.");
+                return NotFound();
             }
 
+            if(auction.Status != "Close")
+            {
+                return BadRequest("Auction is not closed yet");
+            }
+
+            if(auction.Winner != userId)
+            {
+                return BadRequest("You are not the winner of this auction");
+            }
+
+            var highestBid = await _bidService.GetHighest(auction.Id);
+
             var session = _paymentService.CreateCheckoutSession(
-               "https://yourdomain.com/payment/success?sessionId={CHECKOUT_SESSION_ID}",
-               "https://yourdomain.com/payment/cancel?sessionId={CHECKOUT_SESSION_ID}",
-               cheakoutDto
+                auction,
+                highestBid
             );
 
-            // database ekata details add krenwa
             _context.PaymentRecords.Add(new PaymentRecord
             {
                 StripeSessionId = session.Id,
-                UserId=cheakoutDto.BuyerId.ToString(),
-                AuctionId=cheakoutDto.AuctionId,
+                UserId=userId,
+                AuctionId=auction.Id,
                 Created = DateTime.UtcNow,
-                Status = "Created"
+                Status = "Pending"
 
             });
             _context.SaveChanges();
 
-            return Ok(new { sessionId = session.Id });
+            return Ok(new { url= session.Url });
         }
 
         [HttpGet("success")]
         public async Task<IActionResult> Success(string sessionId)
         {
-            //cheak krnewa return krpi session id ekai databse eke id ekai harida kiyala
             var paymentRecord = await _context.PaymentRecords.FirstOrDefaultAsync(p => p.StripeSessionId == sessionId);
             if (paymentRecord != null)
             {
                 paymentRecord.Status = "Success";
+                var auction = await _context.Auctions.FindAsync(paymentRecord.AuctionId);
+                auction.Status = "Sold";
+
+                var nft = await _context.Nfts.FindAsync(auction.NftId);
+                nft.UserId = paymentRecord.UserId;
+
                 await _context.SaveChangesAsync();
             }
 
-            // Redirect to a success page or return success response
-            return Ok("Payment successful.");
+            return Redirect("http://localhost:3000/account/inventory?status=ok");
         }
 
         [HttpGet("cancel")]
@@ -75,8 +101,7 @@ namespace Api.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            // Redirect to a cancel page or return cancel response
-            return Ok("Payment cancelled.");
+            return Redirect("http://localhost:3000/account/inventory?status=bad");
         }
     }
 }

@@ -18,5 +18,17 @@ namespace Api.Mapping
                 UserID = UserId
             };
         }
+
+        public static ClaimResponse ToClaim(this Auction auction,long highestBid)
+        {
+            return new ClaimResponse
+            {
+                Id = auction.Id,
+                Name = auction.Nft.Title,
+                Img = auction.Nft.Image,
+                Auction = auction.Title,
+                Amount = highestBid
+            };
+        }
     }
 }

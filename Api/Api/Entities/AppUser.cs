@@ -19,6 +19,6 @@ namespace Api.Entities
 
         public List<PaymentRecord> PaymentRecords { get; set; }
 
-      
+        public List<Auction> Wins { get; set; }
     }
 }

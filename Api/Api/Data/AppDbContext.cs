@@ -45,6 +45,13 @@ namespace Api.Data
                 .HasForeignKey(a => a.UserID)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            // AppUser -> Wins (One User can have many wins)
+            builder.Entity<AppUser>()
+                .HasMany(u => u.Wins)
+                .WithOne(a => a.WinUser)
+                .HasForeignKey(a => a.Winner)
+                .OnDelete(DeleteBehavior.NoAction);
+
             // AppUser -> Bids (One User can place many Bids)
             builder.Entity<AppUser>()
                 .HasMany(u => u.Bids)
@@ -64,7 +71,11 @@ namespace Api.Data
                 .HasMany(n => n.Auctions)
                 .WithOne(a => a.Nft)
                 .HasForeignKey(a => a.NftId)
-               .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Auction>()
+                .Property(a => a.Winner)
+                .IsRequired(false);
 
 
             base.OnModelCreating(builder);

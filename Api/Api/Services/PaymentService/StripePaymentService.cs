@@ -1,4 +1,5 @@
 ﻿using Api.Dtos;
+using Api.Entities;
 using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
@@ -12,7 +13,7 @@ namespace Api.Services.PaymentService
             StripeConfiguration.ApiKey = stripeSettings.Value.SecretKey;
         }
 
-        public Session CreateCheckoutSession(string successUrl, string cancelUrl,CheakoutDto cheakoutDto)
+        public Session CreateCheckoutSession(Auction auction,Bid highestBid)
         {
             var options = new SessionCreateOptions
             {
@@ -26,21 +27,20 @@ namespace Api.Services.PaymentService
                     {
                         PriceData = new SessionLineItemPriceDataOptions
                         {
-                            UnitAmount = cheakoutDto.FinalPrice * 100, // For example, $20.00 (this value is in cents)
+                            UnitAmount = highestBid.BidPrice,
                             Currency = "usd",
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
-                                Name = cheakoutDto.NftTitle,
-                                Description = cheakoutDto.NftDescription
-
+                                Name = auction.Nft.Title,
+                                Description = auction.Nft.Description
                             },
                         },
                     Quantity = 1,
                 },
             },
                 Mode = "payment",
-                SuccessUrl = successUrl,
-                CancelUrl = cancelUrl,
+                SuccessUrl = "https://localhost:7218/api/Payment/success?sessionId={CHECKOUT_SESSION_ID}",
+                CancelUrl = "https://localhost:7218/api/Payment/cancel?sessionId={CHECKOUT_SESSION_ID}",
             };
 
             var service = new SessionService();
