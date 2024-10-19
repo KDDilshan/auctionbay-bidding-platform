@@ -1,7 +1,6 @@
 "use client";
 import React, { useContext, useEffect } from "react";
 import { useState } from "react";
-import Image from "next/image";
 import { CiCircleCheck } from "react-icons/ci";
 import { GrSave } from "react-icons/gr";
 import { User, Link, Button } from "@nextui-org/react";
