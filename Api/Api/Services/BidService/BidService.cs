@@ -17,6 +17,12 @@ namespace Api.Services.BidService
             _userService = userService;
         }
 
+        public async Task<Bid> GetHighest(int auctionId)
+        {
+            var highestBid = await _context.Bids.Where(b => b.AuctionID == auctionId).OrderByDescending(b => b.BidPrice).FirstOrDefaultAsync();
+            return highestBid;
+        }
+
         public async Task<string> PlaceBid(int auctionId, PlaceBidDto placeBidDto)
         {
             var auction = await _context.Auctions.FindAsync(auctionId);
@@ -42,5 +48,6 @@ namespace Api.Services.BidService
             await _context.SaveChangesAsync();
             return "Bid placed successfully";
         }
+
     }
 }
