@@ -46,7 +46,7 @@ namespace Api.Controllers
         }
 
         [HttpGet("user")]
-        [Authorize(Roles = "Seller")]
+        [Authorize]
         public async Task<ActionResult<List<Nft>>>GetMyNfts() 
         {
             try
@@ -215,11 +215,6 @@ namespace Api.Controllers
 
             return Ok("NFT successfully deleted.");
         }
-
-
-
-
-
 
     }
 }
