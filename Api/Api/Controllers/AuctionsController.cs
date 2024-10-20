@@ -87,6 +87,57 @@ namespace Api.Controllers
             }
         }
 
+        [HttpPost("search")]
+        public async Task<ActionResult<List<AuctionResponse>>> SearchAuctions(AuctionSearchDto searchDto)
+        {
+            try
+            {
+                List<Auction> auctions;
+
+                if (string.IsNullOrWhiteSpace(searchDto.searchString))
+                {
+                    auctions = await _context.Auctions
+                        .Include(a => a.Nft)
+                        .OrderByDescending(a => a.Id)
+                        .ToListAsync();
+                }
+                else
+                {
+                    var searchTerms = searchDto.searchString.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    var searchPattern = string.Join("%", searchTerms);
+
+                    auctions = await _context.Auctions
+                        .Include(a => a.Nft)
+                        .Where(a => EF.Functions.Like(a.Title.ToLower(), $"%{searchPattern.ToLower()}%"))
+                        .OrderByDescending(a => a.Id)
+                        .ToListAsync();
+                }
+
+                var response = new List<AuctionResponse>();
+
+                foreach (var auction in auctions)
+                {
+                    var highestBid = await _bidService.GetHighest(auction.Id);
+                    response.Add(new AuctionResponse
+                    {
+                        Id = auction.Id,
+                        Title = auction.Title,
+                        EndDate = auction.EndDate,
+                        Image = auction.Nft.Image,
+                        CurrentBid = highestBid?.BidPrice ?? auction.Price,
+                        Status = auction.Status,
+                    });
+                }
+
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+
         [HttpGet("{id}/user")]
         [Authorize(Roles = "Seller")]
         public async Task<ActionResult> GetMyAuction(int id)
