@@ -15,7 +15,8 @@ namespace Api.Mapping
                 EndDate = auction.EndDate,
                 Price = auction.Price*100,
                 NftId = auction.NftId,
-                UserID = UserId
+                UserID = UserId,
+                Category = auction.Category
             };
         }
 
