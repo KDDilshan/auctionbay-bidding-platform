@@ -21,3 +21,10 @@ export function getToken() {
   }
   return `Bearer ${token}`;
 }
+
+export function formatCurrency(val) {
+  return (val / 100).toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+}
