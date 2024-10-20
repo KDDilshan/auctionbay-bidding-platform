@@ -6,7 +6,7 @@ import { GrSave } from "react-icons/gr";
 import { User, Link, Button } from "@nextui-org/react";
 import { Input } from "@nextui-org/input";
 import axios from "axios";
-import { apiLink, getToken, toastConfig } from "@/configs";
+import { apiLink, formatCurrency, getToken, toastConfig } from "@/configs";
 import Loading from "@/components/Loading";
 import Countdown from "react-countdown";
 import { toast } from "react-toastify";
@@ -188,8 +188,7 @@ function page({ params }) {
           {/* Bid Form */}
           <div className="p-6 -mt-2">
             <p className="mb-1 text-lg text-left ">
-              Current Bid : $
-              {nft.currentBid / 100 + "." + (nft.currentBid % 100)}
+              Current Bid : {formatCurrency(nft.currentBid)}
             </p>
             {userInfo ? (
               nft.status == "Open" && (
