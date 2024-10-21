@@ -1,5 +1,8 @@
-﻿using Api.Dtos;
+﻿using Api.Data;
+using Api.Dtos;
 using Api.Entities;
+using Api.Services.BidService;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
@@ -39,8 +42,8 @@ namespace Api.Services.PaymentService
                 },
             },
                 Mode = "payment",
-                SuccessUrl = "https://localhost:7218/api/Payment/success?sessionId={CHECKOUT_SESSION_ID}",
-                CancelUrl = "https://localhost:7218/api/Payment/cancel?sessionId={CHECKOUT_SESSION_ID}",
+                SuccessUrl = "https://localhost:7218/api/Payment/confirm?sessionId={CHECKOUT_SESSION_ID}",
+                CancelUrl = "https://localhost:7218/api/Payment/confirm?sessionId={CHECKOUT_SESSION_ID}",
             };
 
             var service = new SessionService();
@@ -48,6 +51,13 @@ namespace Api.Services.PaymentService
 
             return session;
         }
-    
+
+        public async Task<Session> CheckSession(string sessionId)
+        {
+            var service = new SessionService();
+            Session session = await service.GetAsync(sessionId);
+            return session;
+        }
+
     }
 }

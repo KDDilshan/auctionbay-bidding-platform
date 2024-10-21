@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Api.Services.UserService;
 using Api.Services.BidService;
+using Api.Mapping;
+using Api.Services.EmailService;
+using Api.Models.Email;
 
 namespace Api.Controllers
 {
@@ -19,13 +22,15 @@ namespace Api.Controllers
         private readonly AppDbContext _context;
         private readonly IUserService _userService;
         private readonly IBidService _bidService;
+        private readonly IEmailService _emailService;
 
-        public PaymentController(StripePaymentService stripePaymentService,AppDbContext appDbContext, IUserService userService, IBidService bidService)
+        public PaymentController(StripePaymentService stripePaymentService,AppDbContext appDbContext, IUserService userService, IBidService bidService,IEmailService emailService)
         {
             _paymentService = stripePaymentService;
             _context = appDbContext;
             _userService = userService;
             _bidService = bidService;
+            _emailService = emailService;
         }
 
         [Authorize]
@@ -53,16 +58,13 @@ namespace Api.Controllers
 
             var highestBid = await _bidService.GetHighest(auction.Id);
 
-            var session = _paymentService.CreateCheckoutSession(
-                auction,
-                highestBid
-            );
+            var session = _paymentService.CreateCheckoutSession(auction, highestBid);
 
             _context.PaymentRecords.Add(new PaymentRecord
             {
                 StripeSessionId = session.Id,
-                UserId=userId,
-                AuctionId=auction.Id,
+                UserId = auction.Winner,
+                AuctionId = auction.Id,
                 Created = DateTime.UtcNow,
                 Status = "Pending"
 
@@ -72,36 +74,60 @@ namespace Api.Controllers
             return Ok(new { url= session.Url });
         }
 
-        [HttpGet("success")]
+        [HttpGet("confirm")]
         public async Task<IActionResult> Success(string sessionId)
         {
-            var paymentRecord = await _context.PaymentRecords.FirstOrDefaultAsync(p => p.StripeSessionId == sessionId);
+            var paymentRecord = await _context.PaymentRecords.Include(a=>a.User).FirstOrDefaultAsync(p => p.StripeSessionId == sessionId);
+            var status = "bad";
             if (paymentRecord != null)
             {
-                paymentRecord.Status = "Success";
-                var auction = await _context.Auctions.FindAsync(paymentRecord.AuctionId);
-                auction.Status = "Sold";
+                var session = await _paymentService.CheckSession(sessionId);
+                // Check if the payment was successful
+                if (session.PaymentStatus == "paid")
+                {
+                    paymentRecord.Status = "Success";
+                    var auction = await _context.Auctions.FindAsync(paymentRecord.AuctionId);
+                    auction.Status = "Sold";
 
-                var nft = await _context.Nfts.FindAsync(auction.NftId);
-                nft.UserId = paymentRecord.UserId;
+                    var nft = await _context.Nfts.FindAsync(auction.NftId);
+                    nft.UserId = paymentRecord.UserId;
 
-                await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
+                    status= "ok";
+                    _emailService.Send(new AuctionWinnerClaimedEmail(auction.Title, paymentRecord.User.FirstName, paymentRecord.User.Email, nft.Title, nft.Description));
+                }
+                else
+                {
+                    paymentRecord.Status = "Cancelled";
+                    await _context.SaveChangesAsync();
+                }
             }
 
-            return Redirect("http://localhost:3000/account/inventory?status=ok");
+            return Redirect("http://localhost:3000/account/inventory?status="+status);
         }
 
-        [HttpGet("cancel")]
-        public async Task<IActionResult> Cancel(string sessionId)
+        [HttpGet("transactions")]
+        [Authorize]
+        public async Task<ActionResult<List<TransactionResponse>>> GetMyTransactions()
         {
-            var paymentRecord = await _context.PaymentRecords.FirstOrDefaultAsync(p => p.StripeSessionId == sessionId);
-            if (paymentRecord != null)
+            try
             {
-                paymentRecord.Status = "Cancelled";
-                await _context.SaveChangesAsync();
-            }
+                var useId = _userService.GetCurrentUserId();
+                var transactions = await _context.PaymentRecords.Include(a => a.Auction.Nft).Where(a => a.UserId == useId).ToListAsync();
+                var response = new List<TransactionResponse>();
 
-            return Redirect("http://localhost:3000/account/inventory?status=bad");
+                foreach (var payment in transactions)
+                {
+                    var highestBid = await _bidService.GetHighest(payment.Auction.Id);
+                    response.Add(payment.ToDto(highestBid.BidPrice));
+                }
+
+                return Ok(response);
+            }
+            catch (Exception ex) 
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
