@@ -2,8 +2,10 @@
 using Api.Dtos;
 using Api.Entities;
 using Api.Mapping;
+using Api.Models.Email;
 using Api.Services.AuctionService;
 using Api.Services.BidService;
+using Api.Services.EmailService;
 using Api.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -20,13 +22,15 @@ namespace Api.Controllers
         private readonly AppDbContext _context;
         private readonly IUserService _userService;
         private readonly IBidService _bidService;
+        private readonly IEmailService _emailService;
 
-        public AuctionsController(IAuctionService auctionService, AppDbContext context, IUserService userService, IBidService bidService)
+        public AuctionsController(IAuctionService auctionService, AppDbContext context, IUserService userService, IBidService bidService, IEmailService emailService)
         {
             _auctionService = auctionService;
             _context = context;
             _userService = userService;
             _bidService = bidService;
+            _emailService = emailService;
         }
 
         [HttpGet("{id}")]
@@ -203,11 +207,15 @@ namespace Api.Controllers
 
                 if (nft.UserId != user.Id) return Unauthorized("You are not the owner of this NFT");
 
-                var auctions = await _context.Auctions.Where(a => a.NftId == auctionDto.NftId).ToListAsync();
+                var auctions = await _context.Auctions.Where(a => a.NftId == auctionDto.NftId&&(a.Status=="Open"|| a.Status=="Close")).ToListAsync();
                 if (auctions.Count > 0) return BadRequest("This NFT is already in auction");
 
-                _context.Auctions.Add(auctionDto.ToEntity(user.Id));
+                Auction auction = auctionDto.ToEntity(user.Id);
+
+                _context.Auctions.Add(auction);
                 await _context.SaveChangesAsync();
+
+                _emailService.Send(new AuctionCreatedEmail(auction, user));
 
                 return Ok("Auction Created.");
             }catch(Exception e)
