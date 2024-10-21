@@ -32,7 +32,7 @@ function ItemCard({ item }) {
   return (
     <div
       onClick={() => router.replace("/auction/" + item.id)}
-      className="bg-zinc-900 transition ease-in-out duration-300 hover:bg-zinc-800 relative hover:bottom-2 w-[280px] shrink-0 grow-0 rounded-xl overflow-hidden"
+      className="bg-zinc-900 transition ease-in-out duration-300 hover:bg-zinc-800 relative hover:bottom-2 w-[280px] shrink-0 grow-0 rounded-xl overflow-hidden cursor-pointer"
     >
       <div className="w-full h-[170px] overflow-hidden">
         <img
