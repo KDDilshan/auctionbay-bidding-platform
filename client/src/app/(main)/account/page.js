@@ -1,10 +1,75 @@
 "use client";
+import { UserContext } from "@/app/providers";
 import FormInputs from "@/components/FormInputs";
+import { apiLink, getToken, toastConfig } from "@/configs";
 import { Button, Input } from "@nextui-org/react";
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 function page() {
+  const { userInfo, setUserInfo } = useContext(UserContext);
+
+  const [FirstName, setFirstName] = useState("");
+  const [LastName, setLastName] = useState("");
+  const [pd, setPd] = useState(false);
+
   const [email, setEmail] = useState("");
+  const [ePassword, setEPassword] = useState("");
+  const [emailLoading, setEmailLoading] = useState(false);
+
+  const [dPassword, setDPassword] = useState("");
+
+  useEffect(() => {
+    if (userInfo) {
+      setEmail(userInfo.email);
+      setFirstName(userInfo.firstName);
+      setLastName(userInfo.lastName);
+    }
+  }, []);
+
+  const savePersonalDetails = (e) => {
+    e.preventDefault();
+    setPd(true);
+    axios
+      .put(
+        apiLink + "/api/User/UpdateUserNames",
+        { FirstName, LastName },
+        { headers: { Authorization: getToken() } }
+      )
+      .then((res) => {
+        toast.success("Personal Details Updated", toastConfig),
+          setUserInfo({
+            ...userInfo,
+            firstName: FirstName,
+            lastName: LastName,
+          });
+      })
+      .catch((er) =>
+        toast.error("Failed to update personal details", toastConfig)
+      )
+      .finally(() => setPd(false));
+  };
+
+  const changeEmail = (e) => {
+    e.preventDefault();
+    setEmailLoading(true);
+    axios
+      .put(
+        apiLink + "/api/User/UpdateUserEmail",
+        { Email: email, Password: ePassword },
+        { headers: { Authorization: getToken() } }
+      )
+      .then((res) => {
+        toast.success("Email Updated", toastConfig),
+          setUserInfo({
+            ...userInfo,
+            email: email,
+          });
+      })
+      .catch((er) => toast.error("Failed to update email", toastConfig))
+      .finally(() => setEmailLoading(false));
+  };
   return (
     <>
       <h1>Account Settings</h1>
@@ -14,7 +79,7 @@ function page() {
         Manage your name and contact info. These personal details are private
         and will not be displayed to other users.{" "}
       </p>
-      <form action="#">
+      <form onSubmit={savePersonalDetails}>
         <div className="account-input-container">
           <Input
             type="text"
@@ -23,6 +88,8 @@ function page() {
             label="First Name"
             isRequired
             validationBehavior="native"
+            value={FirstName}
+            onChange={(e) => setFirstName(e.target.value)}
           />
           <Input
             type="text"
@@ -31,6 +98,8 @@ function page() {
             label="Last Name"
             isRequired
             validationBehavior="native"
+            value={LastName}
+            onChange={(e) => setLastName(e.target.value)}
           />
         </div>
         <Button
@@ -38,6 +107,7 @@ function page() {
           className="account-button"
           color="success"
           variant="faded"
+          isLoading={pd}
         >
           Save Changes
         </Button>
@@ -49,7 +119,7 @@ function page() {
         alerts and transaction confirmations, will be sent to your new email
         address once the change is complete.
       </p>
-      <form action="#">
+      <form onSubmit={changeEmail}>
         <div className="account-input-container">
           <FormInputs.Email
             className="account-input"
@@ -60,8 +130,8 @@ function page() {
           <FormInputs.Password
             className="account-input"
             lable="Current Password"
-            value={email}
-            setState={setEmail}
+            value={ePassword}
+            setState={setEPassword}
           />
         </div>
         <Button
@@ -69,6 +139,7 @@ function page() {
           className="account-button"
           color="success"
           variant="faded"
+          isLoading={emailLoading}
         >
           Save Changes
         </Button>
@@ -86,8 +157,8 @@ function page() {
         <FormInputs.Password
           className="account-input"
           lable="Current Password"
-          value={email}
-          setState={setEmail}
+          value={dPassword}
+          setState={setDPassword}
         />
         <Button
           type="submit"
