@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext} from "react";
+import React, { useContext } from "react";
 import { FiSearch } from "react-icons/fi";
 import {
   Navbar,
@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 
 export default function Header() {
   const { userInfo, setUserInfo } = useContext(UserContext);
+  const [search, setSearch] = React.useState("");
   const router = useRouter();
   const menuItems = [
     "Profile",
@@ -42,6 +43,16 @@ export default function Header() {
     setUserInfo(null);
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      const quary = new URLSearchParams();
+      if (search.trim()) {
+        quary.append("search", search.trim());
+      }
+      router.replace(`/auction?${quary.toString()}`);
+    }
+  };
+
   return (
     <Navbar
       disableAnimation
@@ -55,13 +66,17 @@ export default function Header() {
 
       <NavbarContent className="sm:hidden pr-3" justify="center">
         <NavbarBrand>
-          <p className="font-bold text-inherit">NFTFY</p>
+          <Link href="/" className="font-bold text-inherit">
+            NFTFY
+          </Link>
         </NavbarBrand>
       </NavbarContent>
 
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarBrand>
-          <p className="font-bold text-2xl text-inherit">NFTFY</p>
+          <Link href="/" className="font-bold text-2xl text-inherit">
+            NFTFY
+          </Link>
         </NavbarBrand>
         <NavbarItem>
           <Link color="foreground" href="#">
@@ -93,6 +108,9 @@ export default function Header() {
           size="sm"
           startContent={<FiSearch />}
           type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
       </NavbarContent>
 
@@ -114,13 +132,23 @@ export default function Header() {
               <DropdownItem
                 key="profile"
                 className="h-14 gap-2"
-                onClick={() => router.push("/account")}
+                onClick={() => router.replace("/account")}
               >
                 <p className="font-semibold">Signed in as</p>
                 <p className="font-semibold">{userInfo.email}</p>
               </DropdownItem>
-              <DropdownItem key="settings">My Settings</DropdownItem>
-              <DropdownItem key="configurations">Seller Dashboard</DropdownItem>
+              <DropdownItem
+                onClick={() => router.replace("/account")}
+                key="settings"
+              >
+                My Settings
+              </DropdownItem>
+              <DropdownItem
+                key="configurations"
+                onClick={() => router.replace("/seller")}
+              >
+                Seller Dashboard
+              </DropdownItem>
               <DropdownItem key="logout" color="danger" onClick={logout}>
                 Log Out
               </DropdownItem>

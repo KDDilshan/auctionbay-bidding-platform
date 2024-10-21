@@ -22,6 +22,8 @@ namespace Api.Entities
         public long Price { get; set; }
         public string Status { get; set; } = "Open";
 
+        public string Category { get; set; }
+
         public int NftId {  get; set; }
 
         public Nft Nft { get; set; }

@@ -7,13 +7,15 @@ import ShowCase from "@/components/ShowCase";
 export default function Home() {
   return (
     <>
-    <main className="flex flex-col gap-5">
-      <Hero/>
-      <Categories/>
-      <Creators />
-      <ShowCase />
-      <ShowCase />
-    </main>
+      <main className="flex flex-col gap-5">
+        <Hero />
+        <Categories />
+        <ShowCase title={"Top Collector Buys Today"} category={"new"} />
+        <ShowCase title={"Cartoon Collection"} category={"cartoon"} />
+        <ShowCase title={"Art Collection"} category={"art"} />
+        <ShowCase title={"Music Collection"} category={"music"} />
+        <Creators />
+      </main>
     </>
   );
 }

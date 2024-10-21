@@ -40,19 +40,131 @@ namespace Api.Controllers
             //var userHighest = await _context.Bids.Where(b => b.AuctionID == id && b.UserId == curruser.Id).OrderByDescending(b => b.BidPrice).FirstOrDefaultAsync();
             return Ok(new AuctionResponse
             {
+                Id = auction.Id,
                 Title = auction.Title,
                 Description = auction.Description,
                 EndDate = auction.EndDate,
                 Price = auction.Price,
                 NftTitle = nft.Title,
                 Image = nft.Image,
-                Category = "Art",
+                Category = auction.Category,
                 CurrentBid = highestBid?.BidPrice ?? auction.Price,
                 NumberOfBids = bidsCount,
                 Owner = user.FirstName + " " + user.LastName,
                 email = user.Email,
                 Status = auction.Status,
             });
+        }
+
+        [HttpGet("category/{category}")]
+        public async Task<ActionResult<List<AuctionResponse>>> GetAuctionsByCategory(string category)
+        {
+            try
+            {
+                List<Auction> auctions;
+                if(category == "new") auctions = await _context.Auctions.Include(a => a.Nft).Where(a => a.Status=="Open").OrderByDescending(a => a.Id).Take(10).ToListAsync();
+                else auctions = await _context.Auctions.Include(a => a.Nft).Where(a => a.Category == category).OrderByDescending(a=>a.Id).Take(10).ToListAsync();
+                var response = new List<AuctionResponse>();
+
+                foreach (var auction in auctions)
+                {
+                    var highestBid = await _bidService.GetHighest(auction.Id);
+                    response.Add(new AuctionResponse
+                    {
+                        Id = auction.Id,
+                        Title = auction.Title,
+                        EndDate = auction.EndDate,
+                        Image = auction.Nft.Image,
+                        CurrentBid = highestBid?.BidPrice ?? auction.Price,
+                        Status= auction.Status,
+                    });
+                }
+
+                return Ok(response);
+            }catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("search")]
+        public async Task<ActionResult<List<AuctionResponse>>> SearchAuctions(AuctionSearchDto searchDto)
+        {
+            try
+            {
+                List<Auction> auctions;
+
+                if (string.IsNullOrWhiteSpace(searchDto.searchString))
+                {
+                    auctions = await _context.Auctions
+                        .Include(a => a.Nft)
+                        .OrderByDescending(a => a.Id)
+                        .ToListAsync();
+                }
+                else
+                {
+                    var searchTerms = searchDto.searchString.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    var searchPattern = string.Join("%", searchTerms);
+
+                    auctions = await _context.Auctions
+                        .Include(a => a.Nft)
+                        .Where(a => EF.Functions.Like(a.Title.ToLower(), $"%{searchPattern.ToLower()}%"))
+                        .OrderByDescending(a => a.Id)
+                        .ToListAsync();
+                }
+
+                var response = new List<AuctionResponse>();
+
+                foreach (var auction in auctions)
+                {
+                    var highestBid = await _bidService.GetHighest(auction.Id);
+                    response.Add(new AuctionResponse
+                    {
+                        Id = auction.Id,
+                        Title = auction.Title,
+                        EndDate = auction.EndDate,
+                        Image = auction.Nft.Image,
+                        CurrentBid = highestBid?.BidPrice ?? auction.Price,
+                        Status = auction.Status,
+                    });
+                }
+
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+
+        [HttpGet("{id}/user")]
+        [Authorize(Roles = "Seller")]
+        public async Task<ActionResult> GetMyAuction(int id)
+        {
+            var userId = _userService.GetCurrentUserId();
+            var auction = await _context.Auctions.Include(a=>a.Nft).FirstOrDefaultAsync(a=>a.Id==id);
+            if(auction == null) return NotFound("Auction not found");
+            if(auction.UserID != userId) return Unauthorized("You are not the owner of this auction");
+            var highestBid = await _bidService.GetHighest(auction.Id);
+            var bidsCount = await _context.Bids.Where(b => b.AuctionID == id).CountAsync();
+            return Ok(new 
+            {
+                title=auction.Title,
+                description=auction.Description,
+                price=auction.Price/100,
+                nftId=auction.Nft.Id,
+                nftName=auction.Nft.Title,
+                nftDes = auction.Nft.Description,
+                img= auction.Nft.Image,
+                CurrentBid = highestBid?.BidPrice ?? auction.Price,
+                NumberOfBids = bidsCount,
+                startDate = auction.StartDate,
+                endDate = auction.EndDate,
+                status = auction.Status,
+                category = auction.Category
+            });
+            
         }
 
         [HttpPost("{id}/bid")]
@@ -104,33 +216,57 @@ namespace Api.Controllers
             }
         }
 
-        //this is for testing, remove this later
-        [HttpGet]
-        public async Task<ActionResult<List<AuctionResponse>>> GetAuctions()
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Seller")]
+        public async Task<ActionResult> UpdateAuction(int id, [FromBody] AuctionDto auctionDto)
         {
-            var auctions = await _context.Auctions.Where(a => a.Status == "Open").ToListAsync();
+            try
+            {
+                var auction = await _context.Auctions.FindAsync(id);
+                if (auction == null) return NotFound("Auction not found");
+                if (auction.Status == "Close") return BadRequest("Auction is closed.");
+                if (auction.Status == "Sold") return BadRequest("Auction is Sold.");
+
+                var userId = _userService.GetCurrentUserId();
+                if (auction.UserID != userId) return Unauthorized("You are not the owner of this auction");
+
+                auction.Title = auctionDto.Title;
+                auction.Description = auctionDto.Description;
+                auction.Price = auctionDto.Price*100;
+                auction.EndDate = auctionDto.EndDate;
+                auction.StartDate = auctionDto.StartDate;
+                auction.Category = auctionDto.Category;
+                _context.Auctions.Update(auction);
+                await _context.SaveChangesAsync();
+
+                return Ok("Auction Updated.");
+
+            }catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet("user")]
+        [Authorize(Roles = "Seller")]
+        public async Task<ActionResult<List<AuctionResponse>>> GetMyAuctions()
+        {
+            var userId = _userService.GetCurrentUserId();
+            var auctions = await _context.Auctions.Where(a => a.UserID==userId).Include(a=>a.Nft).ToListAsync();
             var response = new List<AuctionResponse>();
 
             foreach (var auction in auctions)
             {
                 var nft = await _context.Nfts.FindAsync(auction.NftId);
-                var user = await _context.Users.FindAsync(auction.UserID);
                 var highestBid = await _bidService.GetHighest(auction.Id);
-                var bidsCount = await _context.Bids.Where(b => b.AuctionID == auction.Id).CountAsync();
-                //var userHighest = await _context.Bids.Where(b => b.AuctionID == auction.Id && b.UserId == curruser.Id).OrderByDescending(b => b.BidPrice).FirstOrDefaultAsync();
                 response.Add(new AuctionResponse
                 {
+                    Id = auction.Id,
                     Title = auction.Title,
-                    Description = auction.Description,
                     EndDate = auction.EndDate,
                     Price = auction.Price,
-                    NftTitle = nft.Title,
-                    Image = nft.Image,
-                    Category = "Art",
+                    NftTitle = auction.Nft.Title,
                     CurrentBid = highestBid?.BidPrice ?? auction.Price,
-                    NumberOfBids = bidsCount,
-                    Owner = user.FirstName + " " + user.LastName,
-                    email = user.Email,
                     Status = auction.Status,
                 });
             }
