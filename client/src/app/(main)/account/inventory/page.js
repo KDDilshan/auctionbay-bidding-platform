@@ -1,5 +1,5 @@
 "use client";
-import { apiLink, getToken, toastConfig } from "@/configs";
+import { apiLink, formatCurrency, getToken, toastConfig } from "@/configs";
 import {
   Button,
   Table,
@@ -68,7 +68,7 @@ function page() {
           </Button>
         );
       case "amount":
-        return "USD " + cellValue / 100 + "." + (cellValue % 100);
+        return formatCurrency(cellValue);
       default:
         return cellValue;
     }
