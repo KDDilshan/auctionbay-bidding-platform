@@ -1,5 +1,5 @@
 "use client";
-import { apiLink, getToken } from "@/configs";
+import { apiLink, formatCurrency, getToken, toastConfig } from "@/configs";
 import {
   Button,
   Table,
@@ -15,8 +15,9 @@ import {
   Image,
 } from "@nextui-org/react";
 import axios from "axios";
+import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { IoMdEye } from "react-icons/io";
+import { toast } from "react-toastify";
 
 const columns = [
   {
@@ -36,49 +37,10 @@ const columns = [
     label: "ACTION",
   },
 ];
-const list = [
-  {
-    title: "Orange",
-    img: "https://localhost:7218/wwwroot/uploads/9a6aefea-ec49-48db-ae62-88c93ac9fbb2.png",
-    price: "$5.50",
-  },
-  {
-    title: "Tangerine",
-    img: "https://localhost:7218/wwwroot/uploads/9a6aefea-ec49-48db-ae62-88c93ac9fbb2.png",
-    price: "$3.00",
-  },
-  {
-    title: "Raspberry",
-    img: "https://localhost:7218/wwwroot/uploads/9a6aefea-ec49-48db-ae62-88c93ac9fbb2.png",
-    price: "$10.00",
-  },
-  {
-    title: "Lemon",
-    img: "https://localhost:7218/wwwroot/uploads/9a6aefea-ec49-48db-ae62-88c93ac9fbb2.png",
-    price: "$5.30",
-  },
-  {
-    title: "Avocado",
-    img: "https://localhost:7218/wwwroot/uploads/9a6aefea-ec49-48db-ae62-88c93ac9fbb2.png",
-    price: "$15.70",
-  },
-  {
-    title: "Lemon 2",
-    img: "https://localhost:7218/wwwroot/uploads/9a6aefea-ec49-48db-ae62-88c93ac9fbb2.png",
-    price: "$8.00",
-  },
-  {
-    title: "Banana",
-    img: "https://localhost:7218/wwwroot/uploads/9a6aefea-ec49-48db-ae62-88c93ac9fbb2.png",
-    price: "$7.50",
-  },
-  {
-    title: "Watermelon",
-    img: "https://localhost:7218/wwwroot/uploads/9a6aefea-ec49-48db-ae62-88c93ac9fbb2.png",
-    price: "$12.20",
-  },
-];
+
 function page() {
+  const searchParams = useSearchParams();
+  const status = searchParams.get("status");
   const [claims, setClaims] = useState([]);
   const [collection, setCollection] = useState([]);
   const renderCell = React.useCallback((item, columnKey) => {
@@ -106,7 +68,7 @@ function page() {
           </Button>
         );
       case "amount":
-        return "USD " + cellValue / 100 + "." + (cellValue % 100);
+        return formatCurrency(cellValue);
       default:
         return cellValue;
     }
@@ -139,6 +101,11 @@ function page() {
       })
       .then((res) => setCollection(res.data))
       .catch((err) => console.log(err));
+
+    if (status) {
+      if (status == "ok") toast.success("Payment successful", toastConfig);
+      else toast.error("Payment failed", toastConfig);
+    }
   }, []);
   return (
     <>

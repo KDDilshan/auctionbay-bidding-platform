@@ -43,6 +43,7 @@ namespace Api.Services.CloseNotifyService
                         }
                         else
                         {
+                            auction.Status = "Over";
                             _emailService.Send(new AuctionClosedNoBidsEmail(auction.Title, auction.EndDate, owner.FirstName + " " + owner.LastName, owner.Email));
                         }
 
