@@ -76,6 +76,8 @@ namespace Api.Controllers
             }
             var token = _jwtService.GenerateToken(user);
 
+            var role = _userService.getRole(user);
+
             return Ok(new AuthResponseDto
             {
                 Token = token,
@@ -83,6 +85,8 @@ namespace Api.Controllers
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,
+                Status = user.Status,
+                Role = role
             });
         }
 
@@ -99,8 +103,8 @@ namespace Api.Controllers
                     Message = "User not found"
                 });
             }
-
-            return Ok(user.ToDto());
+            var role = _userService.getRole(user);
+            return Ok(user.ToDto(role));
         }
 
         [Authorize]
@@ -227,7 +231,7 @@ namespace Api.Controllers
                 });
             }
 
-            return Ok(users.Select(u => u.ToDto()).ToList());
+            return Ok(users.Select(u => u.ToDto(_userService.getRole(u))).ToList());
         }
 
     }

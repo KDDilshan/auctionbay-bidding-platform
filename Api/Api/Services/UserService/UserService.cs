@@ -24,5 +24,28 @@ namespace Api.Services.UserService
             String id = GetCurrentUserId();
             return await _userManager.FindByIdAsync(id);
         }
+
+        public string getRole(AppUser user)
+        {
+            var roles = _userManager.GetRolesAsync(user).Result;
+
+            if (roles.Contains("Admin"))
+            {
+                return "Admin";
+            }
+            else if (roles.Contains("Seller"))
+            {
+                return "Seller";
+            }
+            else if (roles.Contains("User"))
+            {
+                return "User";
+            }
+            else
+            {
+                return "No Role Assigned";
+            }
+
+        }
     }
 }

@@ -6,5 +6,6 @@ namespace Api.Services.UserService
     {
         public string GetCurrentUserId();
         public Task<AppUser> getCurrentUser();
+        public string getRole(AppUser user);
     }
 }

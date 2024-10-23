@@ -12,7 +12,8 @@ namespace Api.Mapping
                 FirstName = registerDto.FirstName,
                 LastName = registerDto.LastName,
                 Email = registerDto.Email,
-                UserName = registerDto.Email
+                UserName = registerDto.Email,
+                Status = "Active",
             };
         }
 
@@ -22,7 +23,19 @@ namespace Api.Mapping
             {
                 FirstName = appUser.FirstName,
                 LastName = appUser.LastName,
-                Email = appUser.Email
+                Email = appUser.Email,
+                Status = appUser.Status,
+            };
+        }
+        public static UserDto ToDto(this AppUser appUser,string role)
+        {
+            return new UserDto
+            {
+                FirstName = appUser.FirstName,
+                LastName = appUser.LastName,
+                Email = appUser.Email,
+                Status = appUser.Status,
+                Role = role
             };
         }
     }
