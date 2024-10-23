@@ -22,6 +22,7 @@ import axios from "axios";
 import { apiLink, getToken, toastConfig } from "@/configs";
 import Image from "next/image";
 import { toast } from "react-toastify";
+import MyTable from "@/components/Table";
 
 const columns = [
   {
@@ -136,22 +137,12 @@ function Page() {
   };
   return (
     <>
-      <Table aria-label="Example table with dynamic content">
-        <TableHeader columns={columns}>
-          {(column) => (
-            <TableColumn key={column.key}>{column.label}</TableColumn>
-          )}
-        </TableHeader>
-        <TableBody items={rows}>
-          {(item) => (
-            <TableRow key={item.key}>
-              {(columnKey) => (
-                <TableCell>{renderCell(item, columnKey)}</TableCell>
-              )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+      <MyTable
+        columns={columns}
+        rows={rows}
+        renderCell={renderCell}
+        emptyContent={"There is no Seller Requests to display."}
+      />
       <Modal size={"xl"} isOpen={isOpen} onClose={onClose}>
         <ModalContent>
           {(onClose) => (
