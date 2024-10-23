@@ -26,6 +26,8 @@ function page() {
           email: res.data.email,
           firstName: res.data.firstName,
           lastName: res.data.lastName,
+          status: res.data.status,
+          role: res.data.role,
         });
         localStorage.setItem("token", res.data.token);
         push("/");
