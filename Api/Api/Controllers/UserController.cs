@@ -214,5 +214,21 @@ namespace Api.Controllers
 
         }
 
+        [HttpGet("all")]
+        public async Task<ActionResult<List<UserDto>>> GetAllUsers()
+        {
+            var users = await _context.Users.ToListAsync();
+
+            if (users is null)
+            {
+                return NotFound(new AuthResponseDto
+                {
+                    Message = "No users found"
+                });
+            }
+
+            return Ok(users.Select(u => u.ToDto()).ToList());
+        }
+
     }
 }
