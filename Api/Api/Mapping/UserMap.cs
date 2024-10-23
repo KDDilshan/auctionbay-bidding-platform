@@ -35,7 +35,8 @@ namespace Api.Mapping
                 LastName = appUser.LastName,
                 Email = appUser.Email,
                 Status = appUser.Status,
-                Role = role
+                Role = role,
+                Id = appUser.Id
             };
         }
     }
