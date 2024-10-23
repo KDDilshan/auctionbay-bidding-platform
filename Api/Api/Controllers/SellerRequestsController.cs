@@ -35,8 +35,7 @@ namespace Api.Controllers
             _userManager = userManager;
         }
 
-        // GET: api/SellerRequests
-
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SellerRequest>>> GetRequests()
         {
@@ -45,6 +44,7 @@ namespace Api.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}/image")]
         public async Task<ActionResult> GetImage(int id)
         {
@@ -95,7 +95,7 @@ namespace Api.Controllers
             return Ok(new { Message=sellerRequest.Status });
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult> ChangeStatus(int id,RequestStatusDto dto)
         {
@@ -163,22 +163,6 @@ namespace Api.Controllers
             {
                 return BadRequest(e.Message);
             }
-        }
-
-        // DELETE: api/SellerRequests/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSellerRequest(int id)
-        {
-            var sellerRequest = await _context.Requests.FindAsync(id);
-            if (sellerRequest == null)
-            {
-                return NotFound();
-            }
-
-            _context.Requests.Remove(sellerRequest);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
         private bool SellerRequestExists(int id)
