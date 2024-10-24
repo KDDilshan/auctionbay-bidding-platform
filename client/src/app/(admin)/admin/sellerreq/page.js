@@ -2,13 +2,6 @@
 import { IoMdEye } from "react-icons/io";
 import React, { useEffect, useState } from "react";
 import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-  getKeyValue,
   Button,
   User,
   useDisclosure,
@@ -50,6 +43,7 @@ function Page() {
   const [selectedItem, setSelectedItem] = React.useState(null);
   const [rejectLoading, setRejectLoading] = useState(false);
   const [acceptLoading, setAcceptLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const renderCell = React.useCallback((item, columnKey) => {
     const cellValue = item[columnKey];
@@ -92,7 +86,8 @@ function Page() {
         headers: { Authorization: getToken() },
       })
       .then((res) => setRows(res.data))
-      .catch((er) => console.log(er));
+      .catch((er) => console.log(er))
+      .then(() => setIsLoading(false));
   }, []);
 
   const getImage = async (item) => {
@@ -141,6 +136,7 @@ function Page() {
         columns={columns}
         rows={rows}
         renderCell={renderCell}
+        isLoading={isLoading}
         emptyContent={"There is no Seller Requests to display."}
       />
       <Modal size={"xl"} isOpen={isOpen} onClose={onClose}>
