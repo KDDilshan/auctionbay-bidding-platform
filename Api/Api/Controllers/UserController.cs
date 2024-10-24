@@ -65,6 +65,14 @@ namespace Api.Controllers
                 });
             }
 
+            if(user.Status == "Blocked")
+            {
+                return BadRequest(new AuthResponseDto
+                {
+                    Message = "User is Blocked",
+                });
+            }
+
             var result = await _userManager.CheckPasswordAsync(user, loginDto.Password);
 
             if (!result)
@@ -218,6 +226,7 @@ namespace Api.Controllers
 
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("all")]
         public async Task<ActionResult<List<UserDto>>> GetAllUsers()
         {
@@ -231,7 +240,32 @@ namespace Api.Controllers
                 });
             }
 
-            return Ok(users.Select(u => u.ToDto(_userService.getRole(u))).ToList());
+            List<UserDto> respones = new List<UserDto>();
+            
+            foreach (var user in users)
+            {
+                var role = _userService.getRole(user);
+                if(role != "Admin")
+                {
+                    respones.Add(user.ToDto(role));
+                }
+            }
+
+            return Ok(respones);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut("Status")]
+        public async Task<ActionResult<UserDto>> UpdateUserStatus(UserStatusDto userStatusDto)
+        {
+            var user = await _userManager.FindByIdAsync(userStatusDto.UserId);
+
+            if (user == null) return NotFound("User not found");
+
+            user.Status = userStatusDto.Status;
+            await _context.SaveChangesAsync();
+
+            return Ok(user.ToDto(_userService.getRole(user)));
         }
 
     }
