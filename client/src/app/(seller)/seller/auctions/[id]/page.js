@@ -55,14 +55,18 @@ function page({ params }) {
 
   return (
     <>
-      <h1 className="text-xl mb-2">{update.title}</h1>
-      <div>
-        <div className="bg-zinc-900 p-5 rounded-xl flex gap-2 mb-2">
+      <h1 className="text-2xl font-semibold mb-2">{update.title}</h1>
+      <div className="flex items-start">
+        <div className="bg-zinc-900 p-5 rounded-xl flex gap-2 mb-2 w-1/3">
           <img
             src={apiLink + "/wwwroot/uploads/" + update.img}
             alt={update.title}
             className="w-40 h-40 rounded-xl"
           />
+          <div>
+            <h1 className="text-xl">{update.nftName}</h1>
+            <p>{update.nftDes}</p>
+          </div>
         </div>
       </div>
       <AuctionForm handleSubmit={handleSubmit} update={update} />
