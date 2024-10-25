@@ -15,7 +15,7 @@ export default function RootLayout({ children }) {
     if (!userInfo) router.replace("/login");
     else if (userInfo.role !== "Admin") router.replace("/login");
     else setLoading(false);
-  }, []);
+  }, [userInfo]);
 
   const links = [
     { name: "Dashboard", icon: <MdDashboard />, href: "/admin" },
