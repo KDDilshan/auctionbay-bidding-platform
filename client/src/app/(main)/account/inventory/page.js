@@ -3,12 +3,6 @@ import MyTable from "@/components/Table";
 import { apiLink, formatCurrency, getToken, toastConfig } from "@/configs";
 import {
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
   User,
   Card,
   CardBody,
