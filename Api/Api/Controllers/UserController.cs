@@ -111,6 +111,15 @@ namespace Api.Controllers
                     Message = "User not found"
                 });
             }
+
+            if (user.Status == "Blocked")
+            {
+                return BadRequest(new AuthResponseDto
+                {
+                    Message = "User is Blocked",
+                });
+            }
+
             var role = _userService.getRole(user);
             return Ok(user.ToDto(role));
         }
