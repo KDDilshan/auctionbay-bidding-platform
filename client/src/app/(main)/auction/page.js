@@ -19,7 +19,7 @@ function page() {
   }, [search]);
   return (
     <div className="container-full">
-      <h1 className="text-2xl font-bold">Auctions</h1>
+      <h1 className="text-2xl font-bold mt-5">Search Auctions</h1>
       <p className=" text-zinc-500">{auctions.length} results found.</p>
       <div className="pt-5">
         {auctions.map((item, index) => (

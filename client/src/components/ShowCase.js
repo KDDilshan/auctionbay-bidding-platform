@@ -24,7 +24,7 @@ function ShowCase({ title, category }) {
   useEffect(() => {
     axios
       .get(apiLink + "/api/Auctions/category/" + category)
-      .then((res) => setItems(res.data))
+      .then((res) => setItems(res.data).slice(0, 10))
       .catch((er) => console.log(er));
   }, []);
   return items.length > 0 ? (

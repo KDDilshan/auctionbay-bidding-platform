@@ -66,8 +66,8 @@ namespace Api.Controllers
             try
             {
                 List<Auction> auctions;
-                if(category == "new") auctions = await _context.Auctions.Include(a => a.Nft).Where(a => a.Status=="Open").OrderByDescending(a => a.Id).Take(10).ToListAsync();
-                else auctions = await _context.Auctions.Include(a => a.Nft).Where(a => a.Category == category).OrderByDescending(a=>a.Id).Take(10).ToListAsync();
+                if(category == "new") auctions = await _context.Auctions.Include(a => a.Nft).Where(a => a.Status=="Open").OrderByDescending(a => a.Id).ToListAsync();
+                else auctions = await _context.Auctions.Include(a => a.Nft).Where(a => a.Category == category).OrderByDescending(a=>a.Id).ToListAsync();
                 var response = new List<AuctionResponse>();
 
                 foreach (var auction in auctions)
