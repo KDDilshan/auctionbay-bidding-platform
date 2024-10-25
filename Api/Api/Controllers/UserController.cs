@@ -258,12 +258,17 @@ namespace Api.Controllers
         [HttpPut("Status")]
         public async Task<ActionResult<UserDto>> UpdateUserStatus(UserStatusDto userStatusDto)
         {
+            if(userStatusDto == null) return BadRequest("There is no status to update");
+
             var user = await _userManager.FindByIdAsync(userStatusDto.UserId);
 
             if (user == null) return NotFound("User not found");
 
             user.Status = userStatusDto.Status;
             await _context.SaveChangesAsync();
+
+            if(userStatusDto.Status == "Active") _emailService.Send(new AccountUnblockedEmail(user.FirstName, user.Email));
+            else _emailService.Send(new AccountBlockedEmail(user.FirstName, user.Email));
 
             return Ok(user.ToDto(_userService.getRole(user)));
         }
