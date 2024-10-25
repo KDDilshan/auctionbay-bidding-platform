@@ -45,5 +45,36 @@ namespace Api.Controllers
 
             return Ok(summary);
         }
+
+        [HttpGet("seller")]
+        [Authorize(Roles = "Seller")]
+        public async Task<ActionResult> GetSellerSummary()
+        {
+            string userId = _userService.GetCurrentUserId();
+            var user = await _userService.getCurrentUser();
+
+            if (user == null)
+            {
+                return Unauthorized("User not found.");
+            }
+
+            var totalNfts = await _context.Nfts.CountAsync(nft => nft.UserId == userId);
+
+            var totalAuctions = await _context.Auctions.CountAsync(a => a.UserID == userId);
+
+            var totalEarnings = await _context.PaymentRecords
+                .Where(p => p.UserId == userId && p.Status == "Sold")
+                .SumAsync(p => p.Auction.Price);
+
+            var summary = new
+            {
+                TotalEarnings = totalEarnings,
+                TotalNfts = totalNfts,
+                TotalAuctions = totalAuctions
+            };
+
+            return Ok(summary);
+        }
+
     }
 }

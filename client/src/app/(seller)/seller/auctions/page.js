@@ -4,6 +4,8 @@ import axios from "axios";
 import { apiLink, formatCurrency, getToken } from "@/configs";
 import Link from "next/link";
 import MyTable from "@/components/Table";
+import { Button } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
 const columns = [
   {
@@ -29,19 +31,20 @@ const columns = [
 ];
 function page() {
   const [rows, setRows] = React.useState([]);
+  const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(false);
   const renderCell = React.useCallback((item, columnKey) => {
     const cellValue = item[columnKey];
     switch (columnKey) {
       case "action":
         return (
-          <Link
-            href={`/seller/auctions/${item.id}`}
+          <Button
+            onClick={() => router.replace("/seller/auctions/" + item.id)}
             color="warning"
             variant="faded"
           >
             View
-          </Link>
+          </Button>
         );
       case "date":
         return new Date(item.endDate).toLocaleString();

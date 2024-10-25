@@ -80,7 +80,7 @@ function NftModal({ isOpen, onClose, list, setList, setNftId }) {
                 color="primary"
                 onPress={handleSubmit}
               >
-                Action
+                Add Nft
               </Button>
             </ModalFooter>
           </>
