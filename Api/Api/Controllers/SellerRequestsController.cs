@@ -15,6 +15,8 @@ using Api.Models;
 using Api.Services.FileService;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.AspNetCore.Identity;
+using Api.Services.EmailService;
+using Api.Models.Email;
 
 namespace Api.Controllers
 {
@@ -26,13 +28,15 @@ namespace Api.Controllers
         private readonly IUserService _userService;
         private readonly IFileService _fileService;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IEmailService _emailService;
 
-        public SellerRequestsController(AppDbContext context,IUserService userService,IFileService fileService, UserManager<AppUser> userManager)
+        public SellerRequestsController(AppDbContext context,IUserService userService,IFileService fileService, UserManager<AppUser> userManager,IEmailService emailService)
         {
             _context = context;
             _userService = userService;
             _fileService = fileService;
             _userManager = userManager;
+            _emailService = emailService;
         }
 
         [Authorize(Roles = "Admin")]
@@ -117,11 +121,13 @@ namespace Api.Controllers
                 if(dto.Status == "Approved")
                 {
                     await _userManager.AddToRoleAsync(user, "Seller");
+                    _emailService.Send(new SellerRequestAcceptedEmail(user.FirstName,user.Email));
                 }
 
                 if(dto.Status == "Rejected")
                 {
                     await _userManager.RemoveFromRoleAsync(user, "Seller");
+                    _emailService.Send(new SellerRequestDeclinedEmail(user.FirstName, user.Email));
                 }
 
                 sellerRequest.Status = dto.Status;
@@ -157,6 +163,9 @@ namespace Api.Controllers
 
                 _context.Requests.Add(sellerRequestDto.ToEntity(user.Id, idPhotoPath));
                 await _context.SaveChangesAsync();
+
+                _emailService.Send(new SellerRequestPlacedEmail(user.FirstName, user.Email));
+
                 return Ok("Request sent successfully");
             }
             catch(Exception e)
