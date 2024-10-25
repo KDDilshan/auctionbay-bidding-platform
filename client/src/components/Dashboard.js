@@ -3,7 +3,7 @@ import DashboardMenu from "./DashboardMenu";
 import DashboardHeader from "./DashboardHeader";
 function Dashboard({ children, links, name }) {
   return (
-    <div className="container-w flex h-screen grow fixed top-0">
+    <div className="w-full flex h-screen grow fixed top-0">
       <DashboardMenu links={links} name={name} />
       <div className="w-full lg:w-[80%] h-full">
         <DashboardHeader links={links} />
