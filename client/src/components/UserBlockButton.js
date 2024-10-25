@@ -31,7 +31,7 @@ function UserBlockButton({ user, setRows }) {
         );
         toast.success("User status changed", toastConfig);
       })
-      .catch((e) => {
+      .catch((er) => {
         console.log(er);
         toast.error("Failed to update user", toastConfig);
       })
