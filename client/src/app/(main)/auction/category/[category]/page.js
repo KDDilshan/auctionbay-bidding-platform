@@ -14,7 +14,7 @@ function page({ params }) {
       .then((res) => setItems(res.data))
       .catch((er) => console.log(er))
       .finally(() => setLoading(false));
-  }, []);
+  }, [params.category]);
 
   if (loading) return <Loading />;
 
