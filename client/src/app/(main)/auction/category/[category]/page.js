@@ -24,9 +24,11 @@ function page({ params }) {
         {params.category.charAt(0).toUpperCase() + params.category.slice(1)}{" "}
         Category
       </h1>
-      <p className=" text-zinc-500">
-        There is no auctions found from this category.
-      </p>
+      {items.length == 0 && (
+        <p className=" text-zinc-500">
+          There is no auctions found from this category.
+        </p>
+      )}
       <div className="pt-5">
         {items.map((item, index) => (
           <ItemCard key={item.id} item={item} />
