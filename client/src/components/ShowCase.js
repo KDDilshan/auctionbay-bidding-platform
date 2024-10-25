@@ -28,7 +28,7 @@ function ShowCase({ title, category }) {
       .catch((er) => console.log(er));
   }, []);
   return items.length > 0 ? (
-    <section className="container-w flex flex-col gap-1">
+    <section className="container-w flex flex-col gap-1 mb-2">
       <h1 className="max-lg:px-6 lg:px-8 text-2xl font-bold">{title}</h1>
       <div className="w-full lg:px-8 flex relative group/show">
         <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
