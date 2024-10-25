@@ -1,16 +1,9 @@
 "use client";
 import React, { useEffect } from "react";
-import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-} from "@nextui-org/react";
 import axios from "axios";
 import { apiLink, formatCurrency, getToken } from "@/configs";
 import Link from "next/link";
+import MyTable from "@/components/Table";
 
 const columns = [
   {
@@ -36,6 +29,7 @@ const columns = [
 ];
 function page() {
   const [rows, setRows] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(false);
   const renderCell = React.useCallback((item, columnKey) => {
     const cellValue = item[columnKey];
     switch (columnKey) {
@@ -59,32 +53,25 @@ function page() {
   });
 
   useEffect(() => {
+    setIsLoading(true);
     axios
       .get(apiLink + "/api/Auctions/user", {
         headers: { Authorization: getToken() },
       })
       .then((res) => setRows(res.data))
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err))
+      .then(() => setIsLoading(false));
   }, []);
 
   return (
     <>
-      <Table>
-        <TableHeader columns={columns}>
-          {(column) => (
-            <TableColumn key={column.key}>{column.label}</TableColumn>
-          )}
-        </TableHeader>
-        <TableBody emptyContent="There is no Auctions to display" items={rows}>
-          {(item) => (
-            <TableRow key={item.title}>
-              {(columnKey) => (
-                <TableCell>{renderCell(item, columnKey)}</TableCell>
-              )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+      <MyTable
+        columns={columns}
+        rows={rows}
+        renderCell={renderCell}
+        emptyContent="There is no Auctions to display"
+        isLoading={isLoading}
+      />
     </>
   );
 }

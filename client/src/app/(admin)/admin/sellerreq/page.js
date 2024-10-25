@@ -2,13 +2,6 @@
 import { IoMdEye } from "react-icons/io";
 import React, { useEffect, useState } from "react";
 import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-  getKeyValue,
   Button,
   User,
   useDisclosure,
@@ -22,6 +15,7 @@ import axios from "axios";
 import { apiLink, getToken, toastConfig } from "@/configs";
 import Image from "next/image";
 import { toast } from "react-toastify";
+import MyTable from "@/components/Table";
 
 const columns = [
   {
@@ -49,6 +43,7 @@ function Page() {
   const [selectedItem, setSelectedItem] = React.useState(null);
   const [rejectLoading, setRejectLoading] = useState(false);
   const [acceptLoading, setAcceptLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const renderCell = React.useCallback((item, columnKey) => {
     const cellValue = item[columnKey];
@@ -91,7 +86,8 @@ function Page() {
         headers: { Authorization: getToken() },
       })
       .then((res) => setRows(res.data))
-      .catch((er) => console.log(er));
+      .catch((er) => console.log(er))
+      .then(() => setIsLoading(false));
   }, []);
 
   const getImage = async (item) => {
@@ -136,22 +132,13 @@ function Page() {
   };
   return (
     <>
-      <Table aria-label="Example table with dynamic content">
-        <TableHeader columns={columns}>
-          {(column) => (
-            <TableColumn key={column.key}>{column.label}</TableColumn>
-          )}
-        </TableHeader>
-        <TableBody items={rows}>
-          {(item) => (
-            <TableRow key={item.key}>
-              {(columnKey) => (
-                <TableCell>{renderCell(item, columnKey)}</TableCell>
-              )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+      <MyTable
+        columns={columns}
+        rows={rows}
+        renderCell={renderCell}
+        isLoading={isLoading}
+        emptyContent={"There is no Seller Requests to display."}
+      />
       <Modal size={"xl"} isOpen={isOpen} onClose={onClose}>
         <ModalContent>
           {(onClose) => (

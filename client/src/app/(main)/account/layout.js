@@ -1,6 +1,6 @@
 "use client";
 import { Link } from "@nextui-org/react";
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   FaUserAlt,
   FaBell,
@@ -9,7 +9,14 @@ import {
   FaStoreAlt,
 } from "react-icons/fa";
 import { usePathname } from "next/navigation";
+import { UserContext } from "@/app/providers";
+import Loading from "@/components/Loading";
+import { useRouter } from "next/navigation";
+
 function layout({ children }) {
+  const { userInfo } = useContext(UserContext);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
   const pathname = usePathname();
   const links = [
     { name: "Account Settings", icon: <FaUserAlt />, href: "/account" },
@@ -26,6 +33,13 @@ function layout({ children }) {
       href: "/account/seller",
     },
   ];
+
+  useEffect(() => {
+    if (!userInfo) router.replace("/login");
+    else setLoading(false);
+  }, [userInfo]);
+
+  if (loading) return <Loading />;
   return (
     <div className="container-full">
       <div className="max-w-[1270px] w-full mx-auto flex max-sm:flex-col gap-5 my-10 items-start">

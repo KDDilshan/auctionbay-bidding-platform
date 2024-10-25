@@ -65,6 +65,14 @@ namespace Api.Controllers
                 });
             }
 
+            if(user.Status == "Blocked")
+            {
+                return BadRequest(new AuthResponseDto
+                {
+                    Message = "User is Blocked",
+                });
+            }
+
             var result = await _userManager.CheckPasswordAsync(user, loginDto.Password);
 
             if (!result)
@@ -76,6 +84,8 @@ namespace Api.Controllers
             }
             var token = _jwtService.GenerateToken(user);
 
+            var role = _userService.getRole(user);
+
             return Ok(new AuthResponseDto
             {
                 Token = token,
@@ -83,6 +93,8 @@ namespace Api.Controllers
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,
+                Status = user.Status,
+                Role = role
             });
         }
 
@@ -100,7 +112,16 @@ namespace Api.Controllers
                 });
             }
 
-            return Ok(user.ToDto());
+            if (user.Status == "Blocked")
+            {
+                return BadRequest(new AuthResponseDto
+                {
+                    Message = "User is Blocked",
+                });
+            }
+
+            var role = _userService.getRole(user);
+            return Ok(user.ToDto(role));
         }
 
         [Authorize]
@@ -212,6 +233,53 @@ namespace Api.Controllers
                 return StatusCode(500, new { Message = "An error occurred while deleting the user", Details = ex.Message });
             }
 
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("all")]
+        public async Task<ActionResult<List<UserDto>>> GetAllUsers()
+        {
+            var users = await _context.Users.ToListAsync();
+
+            if (users is null)
+            {
+                return NotFound(new AuthResponseDto
+                {
+                    Message = "No users found"
+                });
+            }
+
+            List<UserDto> respones = new List<UserDto>();
+            
+            foreach (var user in users)
+            {
+                var role = _userService.getRole(user);
+                if(role != "Admin")
+                {
+                    respones.Add(user.ToDto(role));
+                }
+            }
+
+            return Ok(respones);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut("Status")]
+        public async Task<ActionResult<UserDto>> UpdateUserStatus(UserStatusDto userStatusDto)
+        {
+            if(userStatusDto == null) return BadRequest("There is no status to update");
+
+            var user = await _userManager.FindByIdAsync(userStatusDto.UserId);
+
+            if (user == null) return NotFound("User not found");
+
+            user.Status = userStatusDto.Status;
+            await _context.SaveChangesAsync();
+
+            if(userStatusDto.Status == "Active") _emailService.Send(new AccountUnblockedEmail(user.FirstName, user.Email));
+            else _emailService.Send(new AccountBlockedEmail(user.FirstName, user.Email));
+
+            return Ok(user.ToDto(_userService.getRole(user)));
         }
 
     }

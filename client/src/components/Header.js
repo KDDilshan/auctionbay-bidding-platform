@@ -11,37 +11,23 @@ import {
   NavbarItem,
   Link,
   Button,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
   Input,
-  Avatar,
 } from "@nextui-org/react";
 import { UserContext } from "@/app/providers";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import UserMenu from "./UserMenu";
 
 export default function Header() {
-  const { userInfo, setUserInfo } = useContext(UserContext);
+  const { userInfo } = useContext(UserContext);
   const [search, setSearch] = React.useState("");
   const router = useRouter();
+  const pathname = usePathname();
   const menuItems = [
-    "Profile",
-    "Dashboard",
-    "Activity",
-    "Analytics",
-    "System",
-    "Deployments",
-    "My Settings",
-    "Team Settings",
-    "Help & Feedback",
-    "Log Out",
+    { name: "New", href: "/auction/category/new" },
+    { name: "Cartoon", href: "/auction/category/cartoon" },
+    { name: "Music", href: "/auction/category/music" },
+    { name: "Art", href: "/auction/category/art" },
   ];
-
-  const logout = () => {
-    localStorage.removeItem("token");
-    setUserInfo(null);
-  };
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -78,21 +64,16 @@ export default function Header() {
             NFTFY
           </Link>
         </NavbarBrand>
-        <NavbarItem>
-          <Link color="foreground" href="#">
-            Features
-          </Link>
-        </NavbarItem>
-        <NavbarItem isActive>
-          <Link href="#" aria-current="page" color="warning">
-            Customers
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link color="foreground" href="#">
-            Integrations
-          </Link>
-        </NavbarItem>
+        {menuItems.map((item, index) => (
+          <NavbarItem>
+            <Link
+              color={item.href == pathname ? "warning" : "foreground"}
+              href={item.href}
+            >
+              {item.name}
+            </Link>
+          </NavbarItem>
+        ))}
       </NavbarContent>
 
       <NavbarContent justify="end" className="hidden sm:flex">
@@ -114,48 +95,7 @@ export default function Header() {
         />
       </NavbarContent>
 
-      {userInfo && (
-        <NavbarContent as="div" className="items-center" justify="end">
-          <Dropdown placement="bottom-end">
-            <DropdownTrigger>
-              <Avatar
-                isBordered
-                as="button"
-                className="transition-transform"
-                color="secondary"
-                name="Jason Hughes"
-                size="sm"
-                src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-              />
-            </DropdownTrigger>
-            <DropdownMenu aria-label="Profile Actions" variant="flat">
-              <DropdownItem
-                key="profile"
-                className="h-14 gap-2"
-                onClick={() => router.replace("/account")}
-              >
-                <p className="font-semibold">Signed in as</p>
-                <p className="font-semibold">{userInfo.email}</p>
-              </DropdownItem>
-              <DropdownItem
-                onClick={() => router.replace("/account")}
-                key="settings"
-              >
-                My Settings
-              </DropdownItem>
-              <DropdownItem
-                key="configurations"
-                onClick={() => router.replace("/seller")}
-              >
-                Seller Dashboard
-              </DropdownItem>
-              <DropdownItem key="logout" color="danger" onClick={logout}>
-                Log Out
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        </NavbarContent>
-      )}
+      {userInfo && <UserMenu />}
 
       {!userInfo && (
         <NavbarContent justify="end">
@@ -172,20 +112,14 @@ export default function Header() {
 
       <NavbarMenu>
         {menuItems.map((item, index) => (
-          <NavbarMenuItem key={`${item}-${index}`}>
+          <NavbarMenuItem key={`${item.name}-${index}`}>
             <Link
               className="w-full"
-              color={
-                index === 2
-                  ? "warning"
-                  : index === menuItems.length - 1
-                  ? "danger"
-                  : "foreground"
-              }
-              href="#"
+              color={item.href == pathname ? "warning" : "foreground"}
+              href={item.href}
               size="lg"
             >
-              {item}
+              {item.name}
             </Link>
           </NavbarMenuItem>
         ))}

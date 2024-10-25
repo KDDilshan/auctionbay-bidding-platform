@@ -17,6 +17,7 @@ import {
 } from "@nextui-org/react";
 import { UserContext } from "@/app/providers";
 import { usePathname, useRouter } from "next/navigation";
+import UserMenu from "./UserMenu";
 
 export default function DashboardHeader({ links }) {
   const { userInfo, setUserInfo } = useContext(UserContext);
@@ -53,36 +54,7 @@ export default function DashboardHeader({ links }) {
         />
       </NavbarContent>
 
-      <NavbarContent as="div" className="items-center" justify="end">
-        <Dropdown placement="bottom-end">
-          <DropdownTrigger>
-            <Avatar
-              isBordered
-              as="button"
-              className="transition-transform"
-              color="secondary"
-              name="Jason Hughes"
-              size="sm"
-              src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-            />
-          </DropdownTrigger>
-          <DropdownMenu aria-label="Profile Actions" variant="flat">
-            <DropdownItem
-              key="profile"
-              className="h-14 gap-2"
-              onClick={() => router.push("/account")}
-            >
-              <p className="font-semibold">Signed in as</p>
-              <p className="font-semibold">{userInfo?.email}</p>
-            </DropdownItem>
-            <DropdownItem key="settings">My Settings</DropdownItem>
-            <DropdownItem key="configurations">Seller Dashboard</DropdownItem>
-            <DropdownItem key="logout" color="danger" onClick={logout}>
-              Log Out
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
-      </NavbarContent>
+      {userInfo && <UserMenu />}
 
       <NavbarMenu>
         {links.map((item, index) => (

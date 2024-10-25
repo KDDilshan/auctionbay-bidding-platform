@@ -227,6 +227,7 @@ async Task SeedDefaultAdminAsync(UserManager<AppUser> userManager, RoleManager<I
         {
             UserName = defaultAdminEmail,
             Email = defaultAdminEmail,
+            Status = "Active",
             EmailConfirmed = true
         };
 
