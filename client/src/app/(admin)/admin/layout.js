@@ -1,10 +1,11 @@
 "use client";
-import { MdDashboard } from "react-icons/md";
+import { MdDashboard, MdRequestPage } from "react-icons/md";
 import Dashboard from "@/components/Dashboard";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/app/providers";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/Loading";
+import { RiUserFill } from "react-icons/ri";
 
 export default function RootLayout({ children }) {
   const { userInfo } = useContext(UserContext);
@@ -21,10 +22,10 @@ export default function RootLayout({ children }) {
     { name: "Dashboard", icon: <MdDashboard />, href: "/admin" },
     {
       name: "Seller Requests",
-      icon: <MdDashboard />,
+      icon: <MdRequestPage />,
       href: "/admin/sellerreq",
     },
-    { name: "Users", icon: <MdDashboard />, href: "/admin/users" },
+    { name: "Users", icon: <RiUserFill />, href: "/admin/users" },
   ];
 
   if (loading) {

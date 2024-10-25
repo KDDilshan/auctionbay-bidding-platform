@@ -54,7 +54,7 @@ export default function DashboardHeader({ links }) {
         />
       </NavbarContent>
 
-      <UserMenu />
+      {userInfo && <UserMenu />}
 
       <NavbarMenu>
         {links.map((item, index) => (

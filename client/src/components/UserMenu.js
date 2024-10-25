@@ -71,7 +71,7 @@ function UserMenu() {
           {userInfo.role == "Admin" && (
             <DropdownItem
               key="configurations"
-              onClick={() => router.replace("/asmin")}
+              onClick={() => router.replace("/admin")}
             >
               Admin Dashboard
             </DropdownItem>
