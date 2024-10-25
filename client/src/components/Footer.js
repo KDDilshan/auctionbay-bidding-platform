@@ -1,15 +1,16 @@
-import React from 'react'
-import { PiDiscordLogoLight,
-         PiYoutubeLogoLight,
-         PiTwitterLogoLight,
-         PiInstagramLogoLight } from "react-icons/pi";
-import {Input} from "@nextui-org/react";
-import {Button} from "@nextui-org/react";
-
+import React from "react";
+import {
+  PiDiscordLogoLight,
+  PiYoutubeLogoLight,
+  PiTwitterLogoLight,
+  PiInstagramLogoLight,
+} from "react-icons/pi";
+import { Input } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 
 function Footer() {
   return (
-    <section className='container-full my-10'>
+    <section className="container-full mt-auto mb-5">
       <footer className="py-12 text-white bg-gray-800 bg-opacity-40 border-1 rounded-2xl">
         <div className="container px-32 mx-auto flex flex-col md:flex-row justify-between gap-10">
           <div className="">
@@ -83,4 +84,4 @@ function Footer() {
   );
 }
 
-export default Footer
+export default Footer;
