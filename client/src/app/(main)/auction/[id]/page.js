@@ -11,6 +11,7 @@ import Loading from "@/components/Loading";
 import Countdown from "react-countdown";
 import { toast } from "react-toastify";
 import { UserContext } from "@/app/providers";
+import ShowCase from "@/components/ShowCase";
 
 function page({ params }) {
   const [loading, setLoading] = useState(true);
@@ -131,106 +132,109 @@ function page({ params }) {
   if (loading) return <Loading />;
 
   return (
-    <div className="container py-12 mx-auto item-center">
-      <div className="text-center ">
-        <h2 className="text-4xl font-bold">Bid Your Bid Value</h2>
-      </div>
-      <div className="flex flex-col max-w-5xl p-6 mx-auto text-white rounded-lg shadow-lg md:flex-row">
-        <div className="w-full p-4  h-[500px] mb-4 rounded-lg bg-slate-800 md:w-1/2 md:mb-0">
-          <img
-            src={apiLink + "/wwwroot/uploads/" + nft.image}
-            className="object-cover w-full h-full rounded-md"
-            alt=""
-          />
+    <>
+      <div className="container py-12 mx-auto item-center">
+        <div className="text-center ">
+          <h2 className="text-4xl font-bold">Bid Your Bid Value</h2>
         </div>
+        <div className="flex flex-col max-w-5xl p-6 mx-auto text-white rounded-lg shadow-lg md:flex-row">
+          <div className="w-full p-4  h-[500px] mb-4 rounded-lg bg-slate-800 md:w-1/2 md:mb-0">
+            <img
+              src={apiLink + "/wwwroot/uploads/" + nft.image}
+              className="object-cover w-full h-full rounded-md"
+              alt=""
+            />
+          </div>
 
-        <div className="flex flex-col justify-center w-full md:w-1/2 md:pl-6">
-          <div className="flex justify-between mt-2">
-            <p className="flex gap-1 text-sm text-blue-600 ">
-              {nft.category}
-              <CiCircleCheck className="text-sm text-white bg-green-500 rounded-full mt-0.5" />
-            </p>
-            <div className="text-lg cursor-pointer">
-              <GrSave color="gray" size={24} />
+          <div className="flex flex-col justify-center w-full md:w-1/2 md:pl-6">
+            <div className="flex justify-between mt-2">
+              <p className="flex gap-1 text-sm text-blue-600 ">
+                {nft.category}
+                <CiCircleCheck className="text-sm text-white bg-green-500 rounded-full mt-0.5" />
+              </p>
+              <div className="text-lg cursor-pointer">
+                <GrSave color="gray" size={24} />
+              </div>
+            </div>
+            <div>
+              <h2 className="mb-1 text-3xl font-semibold">{nft.title}</h2>
+              <p className="mb-4 text-gray-400">{nft.description}</p>
+              <User
+                name={nft.owner}
+                description={
+                  <Link
+                    href="https://twitter.com/jrgarciadev"
+                    size="sm"
+                    isExternal
+                  >
+                    @{nft.email}
+                  </Link>
+                }
+                avatarProps={{
+                  src: "https://avatars.githubusercontent.com/u/30373425?v=4",
+                }}
+              />
+            </div>
+            <hr className="mt-6 border-t-2 border-slate-500"></hr>
+            {/* Countdown Section */}
+            <div>
+              <p className="p-2 mt-4 -ml-2 text-sm text-gray-400">
+                Auction Ending In:
+              </p>
+              <Countdown
+                renderer={renderer}
+                date={new Date(nft.endDate.slice(0, 23) + "Z").toLocaleString()}
+              />
+            </div>
+            <hr className="mt-6 border-t-2 border-slate-500"></hr>
+            {/* Bid Form */}
+            <div className="p-6 -mt-2">
+              <p className="mb-1 text-lg text-left ">
+                Current Bid : {formatCurrency(nft.currentBid)}
+              </p>
+              {userInfo ? (
+                nft.status == "Open" && (
+                  <form onSubmit={placeBid} className="flex flex-col">
+                    {/* INput for bid value */}
+                    <Input
+                      type="number"
+                      placeholder="0.00"
+                      labelPlacement="outside"
+                      isRequired
+                      validate={(val) => parseFloat(val) > nft.currentBid}
+                      className="mb-2"
+                      value={bidValue}
+                      onChange={(e) => setBidValue(e.target.value)}
+                      startContent={
+                        <div className="flex items-center pointer-events-none">
+                          <span className="text-default-400 text-small">$</span>
+                        </div>
+                      }
+                    />
+                    {/* Place Bid button */}
+                    <Button
+                      isLoading={btnLoading}
+                      type="submit"
+                      className="w-full p-2 px-4 text-white bg-blue-700 rounded-xl hover:bg-blue-900"
+                    >
+                      Place Bid
+                    </Button>
+                  </form>
+                )
+              ) : (
+                <div>Log into your account for place a bid</div>
+              )}
+            </div>
+            <div>
+              <p className="-mt-4 text-gray-400">
+                Total Bids: {nft.numberOfBids}
+              </p>
             </div>
           </div>
-          <div>
-            <h2 className="mb-1 text-3xl font-semibold">{nft.title}</h2>
-            <p className="mb-4 text-gray-400">{nft.description}</p>
-            <User
-              name={nft.owner}
-              description={
-                <Link
-                  href="https://twitter.com/jrgarciadev"
-                  size="sm"
-                  isExternal
-                >
-                  @{nft.email}
-                </Link>
-              }
-              avatarProps={{
-                src: "https://avatars.githubusercontent.com/u/30373425?v=4",
-              }}
-            />
-          </div>
-          <hr className="mt-6 border-t-2 border-slate-500"></hr>
-          {/* Countdown Section */}
-          <div>
-            <p className="p-2 mt-4 -ml-2 text-sm text-gray-400">
-              Auction Ending In:
-            </p>
-            <Countdown
-              renderer={renderer}
-              date={new Date(nft.endDate.slice(0, 23) + "Z").toLocaleString()}
-            />
-          </div>
-          <hr className="mt-6 border-t-2 border-slate-500"></hr>
-          {/* Bid Form */}
-          <div className="p-6 -mt-2">
-            <p className="mb-1 text-lg text-left ">
-              Current Bid : {formatCurrency(nft.currentBid)}
-            </p>
-            {userInfo ? (
-              nft.status == "Open" && (
-                <form onSubmit={placeBid} className="flex flex-col">
-                  {/* INput for bid value */}
-                  <Input
-                    type="number"
-                    placeholder="0.00"
-                    labelPlacement="outside"
-                    isRequired
-                    validate={(val) => parseFloat(val) > nft.currentBid}
-                    className="mb-2"
-                    value={bidValue}
-                    onChange={(e) => setBidValue(e.target.value)}
-                    startContent={
-                      <div className="flex items-center pointer-events-none">
-                        <span className="text-default-400 text-small">$</span>
-                      </div>
-                    }
-                  />
-                  {/* Place Bid button */}
-                  <Button
-                    isLoading={btnLoading}
-                    type="submit"
-                    className="w-full p-2 px-4 text-white bg-blue-700 rounded-xl hover:bg-blue-900"
-                  >
-                    Place Bid
-                  </Button>
-                </form>
-              )
-            ) : (
-              <div>Log into your account for place a bid</div>
-            )}
-          </div>
-          <div>
-            <p className="-mt-4 text-gray-400">
-              Total Bids: {nft.numberOfBids}
-            </p>
-          </div>
         </div>
       </div>
-    </div>
+      <ShowCase title={"Top Collector Buys Today"} category={"new"} />
+    </>
   );
 }
 
