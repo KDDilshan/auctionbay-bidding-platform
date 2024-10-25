@@ -9,9 +9,16 @@ import {
   TableCell,
   Spinner,
 } from "@nextui-org/react";
-function MyTable({ columns, rows, renderCell, emptyContent, isLoading }) {
+function MyTable({
+  columns,
+  rows,
+  renderCell,
+  emptyContent,
+  isLoading,
+  zeroPadding,
+}) {
   return (
-    <Table>
+    <Table classNames={zeroPadding ? { wrapper: "p-0" } : {}}>
       <TableHeader columns={columns}>
         {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
       </TableHeader>

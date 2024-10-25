@@ -1,15 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-} from "@nextui-org/react";
 import axios from "axios";
 import { apiLink, getToken } from "@/configs";
+import MyTable from "@/components/Table";
 
 const columns = [
   {
@@ -32,6 +25,7 @@ const columns = [
 
 function page() {
   const [transactions, setTransactions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const renderCell = React.useCallback((item, columnKey) => {
     const cellValue = item[columnKey];
     switch (columnKey) {
@@ -45,12 +39,14 @@ function page() {
   });
 
   useEffect(() => {
+    setIsLoading(true);
     axios
       .get(apiLink + "/api/Payment/transactions", {
         headers: { Authorization: getToken() },
       })
       .then((res) => setTransactions(res.data))
-      .catch((err) => console.log("Failed to fetch transactions"));
+      .catch((err) => console.log("Failed to fetch transactions"))
+      .finally(() => setIsLoading(false));
   }, []);
   return (
     <>
@@ -58,25 +54,14 @@ function page() {
       <p className="mb-2">
         Track all your past transactions, including payment details.
       </p>
-      <Table aria-label="Transactions" classNames={{ wrapper: "p-0" }}>
-        <TableHeader columns={columns}>
-          {(column) => (
-            <TableColumn key={column.key}>{column.label}</TableColumn>
-          )}
-        </TableHeader>
-        <TableBody
-          emptyContent={"There is no transactions to display."}
-          items={transactions}
-        >
-          {(item) => (
-            <TableRow key={item.key}>
-              {(columnKey) => (
-                <TableCell>{renderCell(item, columnKey)}</TableCell>
-              )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+      <MyTable
+        columns={columns}
+        rows={transactions}
+        renderCell={renderCell}
+        emptyContent={"There is no transactions to display."}
+        zeroPadding
+        isLoading={isLoading}
+      />
     </>
   );
 }

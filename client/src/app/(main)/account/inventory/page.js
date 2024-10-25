@@ -1,4 +1,5 @@
 "use client";
+import MyTable from "@/components/Table";
 import { apiLink, formatCurrency, getToken, toastConfig } from "@/configs";
 import {
   Button,
@@ -113,25 +114,13 @@ function page() {
       <p>Manage your NFT collection and claim new NFTs.</p>
       <h2>Claims</h2>
       <p>Claim your NFTs here.</p>
-      <Table
-        aria-label="Example table with dynamic content"
-        classNames={{ wrapper: "p-0" }}
-      >
-        <TableHeader columns={columns}>
-          {(column) => (
-            <TableColumn key={column.key}>{column.label}</TableColumn>
-          )}
-        </TableHeader>
-        <TableBody emptyContent={"There is no Nfts to claim."} items={claims}>
-          {(item) => (
-            <TableRow key={item.key}>
-              {(columnKey) => (
-                <TableCell>{renderCell(item, columnKey)}</TableCell>
-              )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+      <MyTable
+        columns={columns}
+        rows={claims}
+        renderCell={renderCell}
+        emptyContent={"There is no Nfts to claim."}
+        zeroPadding
+      />
       <h2>Collection</h2>
       <p>Your NFT Collection.</p>
       <div className="mt-2 gap-2 grid grid-cols-2 sm:grid-cols-6">
