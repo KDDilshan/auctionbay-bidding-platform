@@ -10,7 +10,14 @@ import MyChart from "@/components/MyChart";
 function page({ params }) {
   const [update, setUpdate] = useState(null);
   const [bids, setBids] = useState([]);
-  const handleSubmit = (title, description, startingPrice, nftId, date) => {
+  const handleSubmit = (
+    title,
+    description,
+    startingPrice,
+    nftId,
+    date,
+    category
+  ) => {
     axios
       .put(
         apiLink + "/api/Auctions/" + params.id,
@@ -18,6 +25,7 @@ function page({ params }) {
           title,
           description,
           price: startingPrice,
+          category,
           startDate: new Date(date.start.toDate()).toISOString(),
           endDate: new Date(date.end.toDate()).toISOString(),
         },
@@ -28,7 +36,7 @@ function page({ params }) {
         }
       )
       .then((res) => {
-        toast.success("Auction Created", toastConfig);
+        toast.success("Auction Updated", toastConfig);
       })
       .catch((er) => {
         toast.error("Failed Operation", toastConfig);
