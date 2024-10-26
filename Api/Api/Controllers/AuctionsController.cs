@@ -184,6 +184,35 @@ namespace Api.Controllers
             return Ok(result);
         }
 
+        [HttpGet("{id}/bids")]
+        [Authorize(Roles = "Seller")]
+        public async Task<ActionResult> GetAuctionBids(int id)
+        {
+            string userId = _userService.GetCurrentUserId();
+
+            // Check if the auction exists and is owned by the current user
+            var auction = await _context.Auctions
+                .Where(a => a.Id == id && a.UserID == userId)
+                .FirstOrDefaultAsync();
+
+            if (auction == null)
+            {
+                return Unauthorized("You are not authorized to view bids for this auction.");
+            }
+
+            // Fetch all bids for the auction, selecting only BidDate and BidPrice
+            var bids = await _context.Bids
+                .Where(b => b.AuctionID == id)
+                .Select(b => new
+                {
+                    b.BidDate,
+                    b.BidPrice
+                })
+                .ToListAsync();
+
+            return Ok(bids);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Seller")]
         public async Task<ActionResult> CreateAuction([FromBody] AuctionDto auctionDto)
