@@ -67,10 +67,10 @@ function AuctionForm({ handleSubmit, update }) {
         onSubmit={Submit}
         className="bg-zinc-900 p-5 rounded-xl flex flex-col gap-2"
       >
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-col lg:flex-row">
           <Input
             type="text"
-            className="w-1/2"
+            className="w-1/2 max-lg:w-full"
             variant={"bordered"}
             label="Title"
             isRequired
@@ -80,7 +80,7 @@ function AuctionForm({ handleSubmit, update }) {
             onChange={(e) => setTitle(e.target.value)}
           />
           <DateRangePicker
-            className="w-1/2"
+            className="w-1/2 max-lg:w-full"
             hideTimeZone
             granularity="second"
             label="Start and End Date"
@@ -91,10 +91,10 @@ function AuctionForm({ handleSubmit, update }) {
             }}
           />
         </div>
-        <div className="flex gap-2 ">
+        <div className="flex gap-2 flex-col lg:flex-row">
           <Input
             type="number"
-            className={update ? "w-1/2" : "w-1/3"}
+            className={update ? "w-1/2 max-lg:w-full" : "w-1/3 max-lg:w-full"}
             variant={"bordered"}
             label="Starting Price"
             isRequired
@@ -104,7 +104,7 @@ function AuctionForm({ handleSubmit, update }) {
           />
           <Select
             label="Select Category"
-            className={update ? "w-1/2" : "w-1/3"}
+            className={update ? "w-1/2 max-lg:w-full" : "w-1/3 max-lg:w-full"}
             variant={"bordered"}
             isRequired
             validationBehavior="native"
@@ -116,7 +116,7 @@ function AuctionForm({ handleSubmit, update }) {
             <SelectItem key={"art"}>Art</SelectItem>
           </Select>
           {!update && (
-            <div className="w-1/3 flex gap-2">
+            <div className="w-1/3 flex gap-2 max-lg:w-full">
               <Select
                 label="Select Nft"
                 className="w-3/4"

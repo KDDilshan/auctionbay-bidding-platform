@@ -2,10 +2,10 @@ import { Link } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 import React from "react";
 
-function DashboardMenu({ links ,name}) {
+function DashboardMenu({ links, name }) {
   const pathname = usePathname();
   return (
-    <div className="hidden lg:flex flex-col lg:w-[20%] bg-zinc-900 p-5 h-full">
+    <div className="hidden lg:flex flex-col lg:w-[20%] bg-zinc-900 p-5 sticky top-0 h-screen">
       <h1 className="text-3xl text-center">NFTFY</h1>
       <h2 className="text-center font-bold">{name}</h2>
       <div className=" mt-10 flex flex-col gap-1">
