@@ -86,7 +86,7 @@ namespace Api.Controllers
                 if (session.PaymentStatus == "paid")
                 {
                     paymentRecord.Status = "Success";
-                    var auction = await _context.Auctions.FindAsync(paymentRecord.AuctionId);
+                    var auction = await _context.Auctions.Include(a=>a.AppUser).FirstOrDefaultAsync(a=>a.Id==paymentRecord.AuctionId);
                     auction.Status = "Sold";
 
                     var nft = await _context.Nfts.FindAsync(auction.NftId);
@@ -94,7 +94,9 @@ namespace Api.Controllers
 
                     await _context.SaveChangesAsync();
                     status= "ok";
+                    var highestBid = await _bidService.GetHighest(auction.Id);
                     _emailService.Send(new AuctionWinnerClaimedEmail(auction.Title, paymentRecord.User.FirstName, paymentRecord.User.Email, nft.Title, nft.Description));
+                    _emailService.Send(new AuctionNftClaimedEmail(auction.AppUser.FirstName, auction.AppUser.Email, nft.Title, paymentRecord.User.FirstName, highestBid.BidPrice, DateTime.UtcNow));
                 }
                 else
                 {

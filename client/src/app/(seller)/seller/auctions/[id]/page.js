@@ -89,7 +89,7 @@ function page({ params }) {
     <>
       <h1 className="text-2xl font-semibold mb-2">{update.title}</h1>
       <div className="flex flex-col md:flex-row items-start">
-        <div className="bg-zinc-900 p-5 rounded-xl flex gap-2 mb-2 w-full md:w-1/3">
+        <div className="bg-zinc-900 p-5 rounded-xl flex gap-2 mb-2 w-full md:w-1/2">
           <img
             src={apiLink + "/wwwroot/uploads/" + update.img}
             alt={update.title}

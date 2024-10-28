@@ -15,7 +15,6 @@ using Api.Services.UserService;
 using Stripe;
 using Api.Services.NftService;
 using Newtonsoft.Json;
-using Api.Services.AuctionService;
 using Api.Services.PaymentService;
 using Api.Dtos;
 using Api.Services.BidService;
@@ -131,8 +130,6 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBidService, BidService>();
 
 builder.Services.AddScoped<INftRepository, NftRepository>();
-builder.Services.AddScoped<IAuctionService, AuctionService>();
-
 
 builder.Services.AddTransient<SmtpClient>();
 builder.Services.AddScoped<IEmailService, EmailService>();
