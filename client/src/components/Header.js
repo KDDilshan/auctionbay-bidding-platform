@@ -103,7 +103,11 @@ export default function Header() {
             <Link href="login">Login</Link>
           </NavbarItem>
           <NavbarItem>
-            <Button as={Link} color="warning" href="register" variant="flat">
+            <Button
+              onClick={() => router.replace("/register")}
+              color="warning"
+              variant="flat"
+            >
               Sign Up
             </Button>
           </NavbarItem>

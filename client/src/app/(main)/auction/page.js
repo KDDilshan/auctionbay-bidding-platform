@@ -20,8 +20,11 @@ function page() {
   return (
     <div className="container-full">
       <h1 className="text-2xl font-bold mt-5">Search Auctions</h1>
-      <p className=" text-zinc-500">{auctions.length} results found.</p>
-      <div className="pt-5">
+      {auctions.length == 0 && (
+        <p className=" text-zinc-500"> results found.</p>
+      )}
+
+      <div className="pt-5 flex flex-wrap w-full justify-start gap-5">
         {auctions.map((item, index) => (
           <ItemCard key={item.id} item={item} />
         ))}

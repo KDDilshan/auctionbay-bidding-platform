@@ -3,7 +3,6 @@ using Api.Dtos;
 using Api.Entities;
 using Api.Mapping;
 using Api.Models.Email;
-using Api.Services.AuctionService;
 using Api.Services.BidService;
 using Api.Services.EmailService;
 using Api.Services.UserService;
@@ -18,15 +17,13 @@ namespace Api.Controllers
     [ApiController]
     public class AuctionsController : ControllerBase
     {
-        public readonly IAuctionService _auctionService;
         private readonly AppDbContext _context;
         private readonly IUserService _userService;
         private readonly IBidService _bidService;
         private readonly IEmailService _emailService;
 
-        public AuctionsController(IAuctionService auctionService, AppDbContext context, IUserService userService, IBidService bidService, IEmailService emailService)
+        public AuctionsController( AppDbContext context, IUserService userService, IBidService bidService, IEmailService emailService)
         {
-            _auctionService = auctionService;
             _context = context;
             _userService = userService;
             _bidService = bidService;
@@ -41,7 +38,6 @@ namespace Api.Controllers
             var user = await _context.Users.FindAsync(auction.UserID);
             var highestBid = await _bidService.GetHighest(auction.Id);
             var bidsCount = await _context.Bids.Where(b => b.AuctionID == id).CountAsync();
-            //var userHighest = await _context.Bids.Where(b => b.AuctionID == id && b.UserId == curruser.Id).OrderByDescending(b => b.BidPrice).FirstOrDefaultAsync();
             return Ok(new AuctionResponse
             {
                 Id = auction.Id,

@@ -14,9 +14,9 @@ function Footer() {
       <footer className="py-12 text-white bg-gray-800 bg-opacity-40 border-1 rounded-2xl">
         <div className="container px-32 mx-auto flex flex-col md:flex-row justify-between gap-10">
           <div className="">
-            <h3 className="mb-4 text-lg font-semibold">NFTKING</h3>
+            <h3 className="mb-4 text-lg font-semibold">NFTFY</h3>
             <p className="mb-4 text-sm font-thin">
-              NFT marketplace UI created with Anima for Figma.
+              NFT marketplace for everyone.
             </p>
             <h3 className="mt-4 font-thin text-white">Join our community</h3>
             <div className="flex space-x-4 text-3xl ">
@@ -76,8 +76,7 @@ function Footer() {
 
         <hr className="mx-16 md:mx-32 my-8 border-gray-600" />
         <p className=" mb-4 md:mx-32 -mt-4 text-sm font-thin text-center md:text-left">
-          <span className="text-lg font-thin">&copy; </span>NFT Market. Use this
-          template freely.
+          <span className="text-lg font-thin">&copy; </span>NFT Market.
         </p>
       </footer>
     </section>

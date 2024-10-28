@@ -29,7 +29,7 @@ function page({ params }) {
           There is no auctions found from this category.
         </p>
       )}
-      <div className="pt-5">
+      <div className="pt-5 flex flex-wrap w-full justify-start gap-5">
         {items.map((item, index) => (
           <ItemCard key={item.id} item={item} />
         ))}
