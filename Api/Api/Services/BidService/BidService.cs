@@ -32,6 +32,8 @@ namespace Api.Services.BidService
             var auction = await _context.Auctions.Include(a=>a.AppUser).FirstOrDefaultAsync(a=>a.Id==auctionId);
             if (auction == null) return "not found";
 
+            if (auction.Status != "Open") return "bad";
+
             var highestBid = await _context.Bids.Where(b => b.AuctionID == auctionId).OrderByDescending(b => b.BidPrice).FirstOrDefaultAsync();
 
             long value = (long)placeBidDto.Price*100;
