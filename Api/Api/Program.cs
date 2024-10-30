@@ -213,7 +213,7 @@ async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
 
 async Task SeedDefaultAdminAsync(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
 {
-    var defaultAdminEmail = "admin@yourapp.com";
+    var defaultAdminEmail = "admin@admin.com";
     var defaultAdminPassword = "Admin123!"; 
 
     var adminUser = await userManager.FindByEmailAsync(defaultAdminEmail);

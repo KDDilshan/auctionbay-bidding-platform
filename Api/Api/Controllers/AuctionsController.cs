@@ -176,6 +176,7 @@ namespace Api.Controllers
 
             if (result == "not found") return NotFound("Auction not found");
             if (result == "low") return BadRequest("Bid price must be higher than current bid price");
+            if (result == "bad") return BadRequest("Auction is not open for bidding");
 
             return Ok(result);
         }

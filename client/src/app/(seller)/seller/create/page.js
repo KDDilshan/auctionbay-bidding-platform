@@ -4,8 +4,10 @@ import axios from "axios";
 import { apiLink, getToken, toastConfig } from "@/configs";
 import { toast } from "react-toastify";
 import AuctionForm from "@/components/AuctionForm";
+import { useRouter } from "next/navigation";
 
 function page() {
+  const router = useRouter();
   const handleSubmit = (
     title,
     description,
@@ -34,6 +36,7 @@ function page() {
       )
       .then((res) => {
         toast.success("Auction Created", toastConfig);
+        router.replace("/seller/auctions");
       })
       .catch((er) => {
         toast.error("Failed Operation", toastConfig);
